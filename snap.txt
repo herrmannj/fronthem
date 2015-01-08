@@ -1,0 +1,170 @@
+.:
+total 12
+-rw-r--r-- 1 joeherrm joeherrm    0 Jan  8 00:34 controls_fronthem.txt
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:22 FHEM
+drwxr-xr-x 8 joeherrm joeherrm 4096 Jan  8 00:30 .git
+-rw-r--r-- 1 joeherrm joeherrm    0 Jan  8 00:45 snap.txt
+drwxr-xr-x 4 joeherrm joeherrm 4096 Jan  8 00:22 www
+
+./FHEM:
+total 52
+-rw-r--r-- 1 joeherrm joeherrm 20822 Jan  7 01:44 01_fronthem.pm
+-rw-r--r-- 1 joeherrm joeherrm 19985 Jan  7 01:43 31_fronthemDevice.pm
+-rw-r--r-- 1 joeherrm joeherrm  6382 Jan  3 02:53 fhconverter.pm
+
+./.git:
+total 44
+drwxr-xr-x  2 joeherrm joeherrm 4096 Jan  8 00:04 branches
+-rw-r--r--  1 joeherrm joeherrm   15 Jan  8 00:30 COMMIT_EDITMSG
+-rw-r--r--  1 joeherrm joeherrm   92 Jan  8 00:04 config
+-rw-r--r--  1 joeherrm joeherrm   73 Jan  8 00:04 description
+-rw-r--r--  1 joeherrm joeherrm   23 Jan  8 00:04 HEAD
+drwxr-xr-x  2 joeherrm joeherrm 4096 Jan  8 00:04 hooks
+-rw-r--r--  1 joeherrm joeherrm  680 Jan  8 00:29 index
+drwxr-xr-x  2 joeherrm joeherrm 4096 Jan  8 00:04 info
+drwxr-xr-x  3 joeherrm joeherrm 4096 Jan  8 00:30 logs
+drwxr-xr-x 18 joeherrm joeherrm 4096 Jan  8 00:30 objects
+drwxr-xr-x  4 joeherrm joeherrm 4096 Jan  8 00:04 refs
+
+./.git/branches:
+total 0
+
+./.git/hooks:
+total 36
+-rwxr-xr-x 1 joeherrm joeherrm  452 Jan  8 00:04 applypatch-msg.sample
+-rwxr-xr-x 1 joeherrm joeherrm  896 Jan  8 00:04 commit-msg.sample
+-rwxr-xr-x 1 joeherrm joeherrm  189 Jan  8 00:04 post-update.sample
+-rwxr-xr-x 1 joeherrm joeherrm  398 Jan  8 00:04 pre-applypatch.sample
+-rwxr-xr-x 1 joeherrm joeherrm 1704 Jan  8 00:04 pre-commit.sample
+-rwxr-xr-x 1 joeherrm joeherrm 1239 Jan  8 00:04 prepare-commit-msg.sample
+-rwxr-xr-x 1 joeherrm joeherrm 4898 Jan  8 00:04 pre-rebase.sample
+-rwxr-xr-x 1 joeherrm joeherrm 3611 Jan  8 00:04 update.sample
+
+./.git/info:
+total 4
+-rw-r--r-- 1 joeherrm joeherrm 240 Jan  8 00:04 exclude
+
+./.git/logs:
+total 8
+-rw-r--r-- 1 joeherrm joeherrm  170 Jan  8 00:30 HEAD
+drwxr-xr-x 3 joeherrm joeherrm 4096 Jan  8 00:30 refs
+
+./.git/logs/refs:
+total 4
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 heads
+
+./.git/logs/refs/heads:
+total 4
+-rw-r--r-- 1 joeherrm joeherrm 170 Jan  8 00:30 master
+
+./.git/objects:
+total 64
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:29 28
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:29 45
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:29 54
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 79
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:29 7d
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 8e
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:29 96
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 99
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:29 a4
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 a9
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 c1
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:29 ca
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 e7
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 f2
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:04 info
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:04 pack
+
+./.git/objects/28:
+total 4
+-r--r--r-- 1 joeherrm joeherrm 321 Jan  8 00:29 2a00c4be02eaf4657a0126b5fd5b509b52934c
+
+./.git/objects/45:
+total 4
+-r--r--r-- 1 joeherrm joeherrm 319 Jan  8 00:29 fc4df0a3d2a24e3ca5122156c780c7f6d99311
+
+./.git/objects/54:
+total 8
+-r--r--r-- 1 joeherrm joeherrm 6696 Jan  8 00:29 15842da2f133422f52e80193fd9cc968abc7da
+
+./.git/objects/79:
+total 4
+-r--r--r-- 1 joeherrm joeherrm 129 Jan  8 00:30 ea69a8ef4423a2e78151bd4be884c632ca6f0e
+
+./.git/objects/7d:
+total 8
+-r--r--r-- 1 joeherrm joeherrm 5707 Jan  8 00:29 70cc10f260c66c6ba04047a75215e95160575b
+
+./.git/objects/8e:
+total 4
+-r--r--r-- 1 joeherrm joeherrm 73 Jan  8 00:30 6cc6a9c415eab7fc6aa1d54cbb5437e77d4345
+
+./.git/objects/96:
+total 4
+-r--r--r-- 1 joeherrm joeherrm 439 Jan  8 00:29 282ddcd4b5142b0d5eb4fbb1cdf30f7f8e7383
+
+./.git/objects/99:
+total 4
+-r--r--r-- 1 joeherrm joeherrm 128 Jan  8 00:30 d16991e508e06583ae75e0dc9eccabd28f727d
+
+./.git/objects/a4:
+total 4
+-r--r--r-- 1 joeherrm joeherrm 3226 Jan  8 00:29 c9c72e291eaa12039dd30150a4a07176dff119
+
+./.git/objects/a9:
+total 4
+-r--r--r-- 1 joeherrm joeherrm 62 Jan  8 00:30 4d9971eb2cf65c4bf8624201f9f3cee71a7304
+
+./.git/objects/c1:
+total 4
+-r--r--r-- 1 joeherrm joeherrm 118 Jan  8 00:30 f02072dd1230b07ff95300ffb9cbda6382168c
+
+./.git/objects/ca:
+total 4
+-r--r--r-- 1 joeherrm joeherrm 1341 Jan  8 00:29 7e745601570b837c859c399d039c4b22274d01
+
+./.git/objects/e7:
+total 4
+-r--r--r-- 1 joeherrm joeherrm 76 Jan  8 00:30 3d9d079cec8d186e60fbdc0358ee9206399b25
+
+./.git/objects/f2:
+total 4
+-r--r--r-- 1 joeherrm joeherrm 49 Jan  8 00:30 3895d540b2fd21780da834c3015cbe25f60d52
+
+./.git/objects/info:
+total 0
+
+./.git/objects/pack:
+total 0
+
+./.git/refs:
+total 8
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 heads
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:04 tags
+
+./.git/refs/heads:
+total 4
+-rw-r--r-- 1 joeherrm joeherrm 41 Jan  8 00:30 master
+
+./.git/refs/tags:
+total 0
+
+./www:
+total 8
+drwxr-xr-x 3 joeherrm joeherrm 4096 Jan  8 00:23 images
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:25 pgm2
+
+./www/images:
+total 4
+drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:24 default
+
+./www/images/default:
+total 12
+-rw-r--r-- 1 joeherrm joeherrm 462 Mai 23  2014 arrow-down.svg
+-rw-r--r-- 1 joeherrm joeherrm 464 Mai 23  2014 arrow-up.svg
+-rw-r--r-- 1 joeherrm joeherrm 706 Mai 23  2014 desktop.svg
+
+./www/pgm2:
+total 16
+-rw-r--r-- 1 joeherrm joeherrm 12705 Dez 21 22:32 fronthemEditor.js
