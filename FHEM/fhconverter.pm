@@ -1,8 +1,129 @@
+##############################################
+# $Id: fhconverter.pm 0 2015-11-10 08:00:00Z herrmannj $
+
+package fronthem;
 use strict;
 use warnings;
 
-package fronthem;
-use Encode;
+###############################################################################
+#
+# Read status and trigger a fhem notify (gadval == notify => trigger)
+#
+###############################################################################
+sub Trigger(@)
+{
+  my ($param) = @_;
+  my $cmd = $param->{cmd};
+  my $gad = $param->{gad};
+  my $gadval = $param->{gadval};
+  my $device = $param->{device};
+  my $attribute = $param->{reading};
+  my $event = $param->{event};
+  my @args = @{$param->{args}};
+  my $cache = $param->{cache};
+  my $result = '';
+  if ($param->{cmd} eq 'get')
+  {
+    $param->{cmd} = 'send';
+  }
+  if ($param->{cmd} eq 'send')
+  {
+    $param->{gad} = $gad;
+    $param->{gadval} = main::ReadingsVal($device, $attribute, '');;
+    $param->{gads} = [];
+    return undef;
+  }
+  elsif ($param->{cmd} eq 'rcv')
+  {
+    # TODO check with bernd alternative syntax: trigger <arg0> gadval or other options
+    $result = main::fhem('trigger '.$device);
+    return 'done';
+  }
+  elsif ($param->{cmd} eq '?')
+  {
+    return 'usage: Trigger';
+  }
+  return undef;
+}
+###############################################################################
+#
+# Read and write fhem device Attributes (gadval == attribute == setval)
+#
+###############################################################################
+sub Attribute(@)
+{
+  my ($param) = @_;
+  my $cmd = $param->{cmd};
+  my $gad = $param->{gad};
+  my $gadval = $param->{gadval};
+  my $device = $param->{device};
+  my $attribute = $param->{reading}; # TODO check with bernd usage of args to keep reading free to trigger
+  my $event = $param->{event};
+  my @args = @{$param->{args}};
+  my $cache = $param->{cache};
+  my $result = '';
+
+  if ($param->{cmd} eq 'get')
+  {
+    $param->{cmd} = 'send';
+  }
+  if ($param->{cmd} eq 'send')
+  {
+    $param->{gad} = $gad;
+    $param->{gadval} = main::AttrVal($device, $attribute, '');
+    $param->{gads} = [];
+    return undef;
+  }
+  elsif ($param->{cmd} eq 'rcv')
+  {
+    $result = main::fhem('attr '.$device.' '.$attribute.' '.$gadval);
+    return 'done';
+  }
+  elsif ($param->{cmd} eq '?')
+  {
+    return 'usage: Direct';
+  }
+  return undef;
+}
+###############################################################################
+#
+# Read fhem device Reading timestamps (gadval == timestamp)
+#
+###############################################################################
+sub ReadingsTimestamp(@)
+{
+  my ($param) = @_;
+  my $cmd = $param->{cmd};
+  my $gad = $param->{gad};
+  my $gadval = $param->{gadval};
+  my $device = $param->{device};
+  my $reading = $param->{reading};
+  my $event = $param->{event};
+  my @args = @{$param->{args}};
+  my $cache = $param->{cache};
+
+  if ($param->{cmd} eq 'get')
+  {
+    $param->{cmd} = 'send';
+  }
+  if ($param->{cmd} eq 'send')
+  {
+    $param->{gad} = $gad;
+    $param->{gadval} = main::ReadingsTimestamp($device, $reading, 0);
+    $param->{gads} = [];
+    return undef;
+  }
+  elsif ($param->{cmd} eq 'rcv')
+  {
+    return 'done';
+  }
+  elsif ($param->{cmd} eq '?')
+  {
+    return 'usage: Readingstimestamp';
+  }
+  return undef;
+}
+
 
 ###############################################################################
 #
@@ -31,8 +152,7 @@ sub Direct(@)
   if ($param->{cmd} eq 'send')
   {
     $param->{gad} = $gad;
-		$param->{gadval} = decode('utf-8', $event);
-    #$param->{gadval} = $event;
+		$param->{gadval} = $event;
 		$param->{gads} = [];
     return undef;
   }

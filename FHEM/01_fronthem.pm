@@ -12,7 +12,6 @@
 
 # open:
 # UTF8 conversation 
-# timestrings
 # num converter with negative values
 # 99er converter (see reload)
 
@@ -27,7 +26,8 @@ use POSIX;
 use IO::Socket;
 use IO::Select;
 
-use Net::WebSocket::Server;
+#use Net::WebSocket::Server;
+use fhwebsocket;
 use JSON;
 
 use Data::Dumper;
@@ -556,10 +556,14 @@ fronthem_StartWebsocketServer(@)
 
   # close open handles
   close STDOUT;  
-  open STDOUT, '>/dev/null';
+  # open STDOUT, '>/dev/null';
+  open STDOUT, '>', "fronthem.out";
   close STDIN;
   close STDERR;  
-  open STDOUT, '>/dev/null';
+  # open STDERR, '>/dev/null';
+  open STDERR, '>>', "fronthem.err";
+
+  local $| = 1;
 
   foreach my $key (keys %defs) { TcpServer_Close($defs{$key}) if ($defs{$key}->{SERVERSOCKET}); }
   foreach my $key (keys %selectlist) { POSIX::close ($selectlist{$key}->{FD}) if (defined($selectlist{$key}->{FD})); }
@@ -584,7 +588,7 @@ fronthem_StartWebsocketServer(@)
   # my $flags = fcntl($server, F_GETFL, 0);
   # fcntl($server, F_SETFL, $flags | O_NONBLOCK);
 
-  my $ws = Net::WebSocket::Server->new(
+  my $ws = fronthem::Websocket::Server->new(
     listen => $server,
     on_connect => \&fronthem_wsConnect
   );
@@ -705,16 +709,7 @@ fronthem_wsProcessInboundCmd(@)
   fronthem_forkLog3 ($serv->{ipc}, 4, "$serv->{id} send to client".encode_json($msg->{message}));
   foreach my $conn ($serv->connections())
   {
-    if ($conn->{id} eq $msg->{ressource})
-    {
-      return fronthem_forkLog3 ($serv->{ipc}, 1, "$serv->{id} found a closed socket for $msg->{receiver}") unless $conn->socket();
-      unless (IO::Select->new($conn->socket())->can_write(0))
-      {
-        $conn->disconnect(1011, '');
-        return fronthem_forkLog3 ($serv->{ipc}, 3, "$serv->{id} force disconnect for $msg->{receiver}");
-      } 
-      $conn->send_utf8(encode_json($msg->{message})) if ($conn->{id} eq $msg->{ressource});
-    }
+    $conn->send_utf8(encode_json($msg->{message})) if ($conn->{id} eq $msg->{ressource});
   }
   return undef;
 }

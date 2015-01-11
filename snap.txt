@@ -1,136 +1,146 @@
 .:
 total 12
--rw-r--r-- 1 joeherrm joeherrm    0 Jan  8 00:34 controls_fronthem.txt
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:22 FHEM
-drwxr-xr-x 8 joeherrm joeherrm 4096 Jan  8 00:30 .git
--rw-r--r-- 1 joeherrm joeherrm    0 Jan  8 00:45 snap.txt
-drwxr-xr-x 4 joeherrm joeherrm 4096 Jan  8 00:22 www
+-rw-r--r-- 1 joeherrm joeherrm    0 2015-01-08 00:34:01.393873815 +0100 controls_fronthem.txt
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:22:39.389893966 +0100 FHEM
+drwxr-xr-x 8 joeherrm joeherrm 4096 2015-01-08 00:48:51.861847504 +0100 .git
+-rw-r--r-- 1 joeherrm joeherrm    0 2015-01-08 00:55:06.325836440 +0100 snap.txt
+drwxr-xr-x 4 joeherrm joeherrm 4096 2015-01-08 00:22:39.389893966 +0100 www
 
 ./FHEM:
 total 52
--rw-r--r-- 1 joeherrm joeherrm 20822 Jan  7 01:44 01_fronthem.pm
--rw-r--r-- 1 joeherrm joeherrm 19985 Jan  7 01:43 31_fronthemDevice.pm
--rw-r--r-- 1 joeherrm joeherrm  6382 Jan  3 02:53 fhconverter.pm
+-rw-r--r-- 1 joeherrm joeherrm 20822 2015-01-07 01:44:18.000000000 +0100 01_fronthem.pm
+-rw-r--r-- 1 joeherrm joeherrm 19985 2015-01-07 01:43:45.000000000 +0100 31_fronthemDevice.pm
+-rw-r--r-- 1 joeherrm joeherrm  6382 2015-01-03 02:53:18.000000000 +0100 fhconverter.pm
 
 ./.git:
 total 44
-drwxr-xr-x  2 joeherrm joeherrm 4096 Jan  8 00:04 branches
--rw-r--r--  1 joeherrm joeherrm   15 Jan  8 00:30 COMMIT_EDITMSG
--rw-r--r--  1 joeherrm joeherrm   92 Jan  8 00:04 config
--rw-r--r--  1 joeherrm joeherrm   73 Jan  8 00:04 description
--rw-r--r--  1 joeherrm joeherrm   23 Jan  8 00:04 HEAD
-drwxr-xr-x  2 joeherrm joeherrm 4096 Jan  8 00:04 hooks
--rw-r--r--  1 joeherrm joeherrm  680 Jan  8 00:29 index
-drwxr-xr-x  2 joeherrm joeherrm 4096 Jan  8 00:04 info
-drwxr-xr-x  3 joeherrm joeherrm 4096 Jan  8 00:30 logs
-drwxr-xr-x 18 joeherrm joeherrm 4096 Jan  8 00:30 objects
-drwxr-xr-x  4 joeherrm joeherrm 4096 Jan  8 00:04 refs
+drwxr-xr-x  2 joeherrm joeherrm 4096 2015-01-08 00:04:23.745926339 +0100 branches
+-rw-r--r--  1 joeherrm joeherrm   15 2015-01-08 00:30:08.509880695 +0100 COMMIT_EDITMSG
+-rw-r--r--  1 joeherrm joeherrm   92 2015-01-08 00:04:23.745926339 +0100 config
+-rw-r--r--  1 joeherrm joeherrm   73 2015-01-08 00:04:23.741926339 +0100 description
+-rw-r--r--  1 joeherrm joeherrm   23 2015-01-08 00:04:23.745926339 +0100 HEAD
+drwxr-xr-x  2 joeherrm joeherrm 4096 2015-01-08 00:04:23.741926339 +0100 hooks
+-rw-r--r--  1 joeherrm joeherrm  840 2015-01-08 00:48:51.861847504 +0100 index
+drwxr-xr-x  2 joeherrm joeherrm 4096 2015-01-08 00:04:23.745926339 +0100 info
+drwxr-xr-x  3 joeherrm joeherrm 4096 2015-01-08 00:30:08.513880695 +0100 logs
+drwxr-xr-x 20 joeherrm joeherrm 4096 2015-01-08 00:48:51.857847504 +0100 objects
+drwxr-xr-x  4 joeherrm joeherrm 4096 2015-01-08 00:04:23.741926339 +0100 refs
 
 ./.git/branches:
 total 0
 
 ./.git/hooks:
 total 36
--rwxr-xr-x 1 joeherrm joeherrm  452 Jan  8 00:04 applypatch-msg.sample
--rwxr-xr-x 1 joeherrm joeherrm  896 Jan  8 00:04 commit-msg.sample
--rwxr-xr-x 1 joeherrm joeherrm  189 Jan  8 00:04 post-update.sample
--rwxr-xr-x 1 joeherrm joeherrm  398 Jan  8 00:04 pre-applypatch.sample
--rwxr-xr-x 1 joeherrm joeherrm 1704 Jan  8 00:04 pre-commit.sample
--rwxr-xr-x 1 joeherrm joeherrm 1239 Jan  8 00:04 prepare-commit-msg.sample
--rwxr-xr-x 1 joeherrm joeherrm 4898 Jan  8 00:04 pre-rebase.sample
--rwxr-xr-x 1 joeherrm joeherrm 3611 Jan  8 00:04 update.sample
+-rwxr-xr-x 1 joeherrm joeherrm  452 2015-01-08 00:04:23.741926339 +0100 applypatch-msg.sample
+-rwxr-xr-x 1 joeherrm joeherrm  896 2015-01-08 00:04:23.741926339 +0100 commit-msg.sample
+-rwxr-xr-x 1 joeherrm joeherrm  189 2015-01-08 00:04:23.741926339 +0100 post-update.sample
+-rwxr-xr-x 1 joeherrm joeherrm  398 2015-01-08 00:04:23.741926339 +0100 pre-applypatch.sample
+-rwxr-xr-x 1 joeherrm joeherrm 1704 2015-01-08 00:04:23.741926339 +0100 pre-commit.sample
+-rwxr-xr-x 1 joeherrm joeherrm 1239 2015-01-08 00:04:23.741926339 +0100 prepare-commit-msg.sample
+-rwxr-xr-x 1 joeherrm joeherrm 4898 2015-01-08 00:04:23.741926339 +0100 pre-rebase.sample
+-rwxr-xr-x 1 joeherrm joeherrm 3611 2015-01-08 00:04:23.741926339 +0100 update.sample
 
 ./.git/info:
 total 4
--rw-r--r-- 1 joeherrm joeherrm 240 Jan  8 00:04 exclude
+-rw-r--r-- 1 joeherrm joeherrm 240 2015-01-08 00:04:23.745926339 +0100 exclude
 
 ./.git/logs:
 total 8
--rw-r--r-- 1 joeherrm joeherrm  170 Jan  8 00:30 HEAD
-drwxr-xr-x 3 joeherrm joeherrm 4096 Jan  8 00:30 refs
+-rw-r--r-- 1 joeherrm joeherrm  170 2015-01-08 00:30:08.513880695 +0100 HEAD
+drwxr-xr-x 3 joeherrm joeherrm 4096 2015-01-08 00:30:08.513880695 +0100 refs
 
 ./.git/logs/refs:
 total 4
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 heads
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:30:08.513880695 +0100 heads
 
 ./.git/logs/refs/heads:
 total 4
--rw-r--r-- 1 joeherrm joeherrm 170 Jan  8 00:30 master
+-rw-r--r-- 1 joeherrm joeherrm 170 2015-01-08 00:30:08.513880695 +0100 master
 
 ./.git/objects:
-total 64
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:29 28
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:29 45
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:29 54
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 79
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:29 7d
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 8e
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:29 96
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 99
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:29 a4
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 a9
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 c1
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:29 ca
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 e7
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 f2
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:04 info
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:04 pack
+total 72
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:29:29.545881847 +0100 28
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:29:29.545881847 +0100 45
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:29:29.541881847 +0100 54
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:48:51.861847504 +0100 5b
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:30:08.509880695 +0100 79
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:29:29.545881847 +0100 7d
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:30:08.509880695 +0100 8e
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:29:29.545881847 +0100 96
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:30:08.513880695 +0100 99
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:29:29.545881847 +0100 a4
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:30:08.509880695 +0100 a9
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:30:08.509880695 +0100 c1
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:29:29.545881847 +0100 ca
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:48:51.857847504 +0100 e6
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:30:08.509880695 +0100 e7
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:30:08.509880695 +0100 f2
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:04:23.745926339 +0100 info
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:04:23.745926339 +0100 pack
 
 ./.git/objects/28:
 total 4
--r--r--r-- 1 joeherrm joeherrm 321 Jan  8 00:29 2a00c4be02eaf4657a0126b5fd5b509b52934c
+-r--r--r-- 1 joeherrm joeherrm 321 2015-01-08 00:29:29.545881847 +0100 2a00c4be02eaf4657a0126b5fd5b509b52934c
 
 ./.git/objects/45:
 total 4
--r--r--r-- 1 joeherrm joeherrm 319 Jan  8 00:29 fc4df0a3d2a24e3ca5122156c780c7f6d99311
+-r--r--r-- 1 joeherrm joeherrm 319 2015-01-08 00:29:29.545881847 +0100 fc4df0a3d2a24e3ca5122156c780c7f6d99311
 
 ./.git/objects/54:
 total 8
--r--r--r-- 1 joeherrm joeherrm 6696 Jan  8 00:29 15842da2f133422f52e80193fd9cc968abc7da
+-r--r--r-- 1 joeherrm joeherrm 6696 2015-01-08 00:29:29.541881847 +0100 15842da2f133422f52e80193fd9cc968abc7da
+
+./.git/objects/5b:
+total 4
+-r--r--r-- 1 joeherrm joeherrm 1361 2015-01-08 00:48:51.861847504 +0100 cec99e333f04eafedfba5d7bad71089468fd9f
 
 ./.git/objects/79:
 total 4
--r--r--r-- 1 joeherrm joeherrm 129 Jan  8 00:30 ea69a8ef4423a2e78151bd4be884c632ca6f0e
+-r--r--r-- 1 joeherrm joeherrm 129 2015-01-08 00:30:08.509880695 +0100 ea69a8ef4423a2e78151bd4be884c632ca6f0e
 
 ./.git/objects/7d:
 total 8
--r--r--r-- 1 joeherrm joeherrm 5707 Jan  8 00:29 70cc10f260c66c6ba04047a75215e95160575b
+-r--r--r-- 1 joeherrm joeherrm 5707 2015-01-08 00:29:29.545881847 +0100 70cc10f260c66c6ba04047a75215e95160575b
 
 ./.git/objects/8e:
 total 4
--r--r--r-- 1 joeherrm joeherrm 73 Jan  8 00:30 6cc6a9c415eab7fc6aa1d54cbb5437e77d4345
+-r--r--r-- 1 joeherrm joeherrm 73 2015-01-08 00:30:08.509880695 +0100 6cc6a9c415eab7fc6aa1d54cbb5437e77d4345
 
 ./.git/objects/96:
 total 4
--r--r--r-- 1 joeherrm joeherrm 439 Jan  8 00:29 282ddcd4b5142b0d5eb4fbb1cdf30f7f8e7383
+-r--r--r-- 1 joeherrm joeherrm 439 2015-01-08 00:29:29.545881847 +0100 282ddcd4b5142b0d5eb4fbb1cdf30f7f8e7383
 
 ./.git/objects/99:
 total 4
--r--r--r-- 1 joeherrm joeherrm 128 Jan  8 00:30 d16991e508e06583ae75e0dc9eccabd28f727d
+-r--r--r-- 1 joeherrm joeherrm 128 2015-01-08 00:30:08.513880695 +0100 d16991e508e06583ae75e0dc9eccabd28f727d
 
 ./.git/objects/a4:
 total 4
--r--r--r-- 1 joeherrm joeherrm 3226 Jan  8 00:29 c9c72e291eaa12039dd30150a4a07176dff119
+-r--r--r-- 1 joeherrm joeherrm 3226 2015-01-08 00:29:29.545881847 +0100 c9c72e291eaa12039dd30150a4a07176dff119
 
 ./.git/objects/a9:
 total 4
--r--r--r-- 1 joeherrm joeherrm 62 Jan  8 00:30 4d9971eb2cf65c4bf8624201f9f3cee71a7304
+-r--r--r-- 1 joeherrm joeherrm 62 2015-01-08 00:30:08.509880695 +0100 4d9971eb2cf65c4bf8624201f9f3cee71a7304
 
 ./.git/objects/c1:
 total 4
--r--r--r-- 1 joeherrm joeherrm 118 Jan  8 00:30 f02072dd1230b07ff95300ffb9cbda6382168c
+-r--r--r-- 1 joeherrm joeherrm 118 2015-01-08 00:30:08.509880695 +0100 f02072dd1230b07ff95300ffb9cbda6382168c
 
 ./.git/objects/ca:
 total 4
--r--r--r-- 1 joeherrm joeherrm 1341 Jan  8 00:29 7e745601570b837c859c399d039c4b22274d01
+-r--r--r-- 1 joeherrm joeherrm 1341 2015-01-08 00:29:29.545881847 +0100 7e745601570b837c859c399d039c4b22274d01
+
+./.git/objects/e6:
+total 4
+-r--r--r-- 1 joeherrm joeherrm 15 2015-01-08 00:48:51.857847504 +0100 9de29bb2d1d6434b8b29ae775ad8c2e48c5391
 
 ./.git/objects/e7:
 total 4
--r--r--r-- 1 joeherrm joeherrm 76 Jan  8 00:30 3d9d079cec8d186e60fbdc0358ee9206399b25
+-r--r--r-- 1 joeherrm joeherrm 76 2015-01-08 00:30:08.509880695 +0100 3d9d079cec8d186e60fbdc0358ee9206399b25
 
 ./.git/objects/f2:
 total 4
--r--r--r-- 1 joeherrm joeherrm 49 Jan  8 00:30 3895d540b2fd21780da834c3015cbe25f60d52
+-r--r--r-- 1 joeherrm joeherrm 49 2015-01-08 00:30:08.509880695 +0100 3895d540b2fd21780da834c3015cbe25f60d52
 
 ./.git/objects/info:
 total 0
@@ -140,31 +150,31 @@ total 0
 
 ./.git/refs:
 total 8
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:30 heads
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:04 tags
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:30:08.513880695 +0100 heads
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:04:23.741926339 +0100 tags
 
 ./.git/refs/heads:
 total 4
--rw-r--r-- 1 joeherrm joeherrm 41 Jan  8 00:30 master
+-rw-r--r-- 1 joeherrm joeherrm 41 2015-01-08 00:30:08.513880695 +0100 master
 
 ./.git/refs/tags:
 total 0
 
 ./www:
 total 8
-drwxr-xr-x 3 joeherrm joeherrm 4096 Jan  8 00:23 images
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:25 pgm2
+drwxr-xr-x 3 joeherrm joeherrm 4096 2015-01-08 00:23:28.473892516 +0100 images
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:25:51.449888291 +0100 pgm2
 
 ./www/images:
 total 4
-drwxr-xr-x 2 joeherrm joeherrm 4096 Jan  8 00:24 default
+drwxr-xr-x 2 joeherrm joeherrm 4096 2015-01-08 00:24:08.393891336 +0100 default
 
 ./www/images/default:
 total 12
--rw-r--r-- 1 joeherrm joeherrm 462 Mai 23  2014 arrow-down.svg
--rw-r--r-- 1 joeherrm joeherrm 464 Mai 23  2014 arrow-up.svg
--rw-r--r-- 1 joeherrm joeherrm 706 Mai 23  2014 desktop.svg
+-rw-r--r-- 1 joeherrm joeherrm 462 2014-05-23 21:31:24.000000000 +0200 arrow-down.svg
+-rw-r--r-- 1 joeherrm joeherrm 464 2014-05-23 21:31:24.000000000 +0200 arrow-up.svg
+-rw-r--r-- 1 joeherrm joeherrm 706 2014-05-23 21:31:24.000000000 +0200 desktop.svg
 
 ./www/pgm2:
 total 16
--rw-r--r-- 1 joeherrm joeherrm 12705 Dez 21 22:32 fronthemEditor.js
+-rw-r--r-- 1 joeherrm joeherrm 12705 2014-12-21 22:32:17.000000000 +0100 fronthemEditor.js

@@ -1,6 +1,11 @@
 ##############################################
 # $Id: 31_fronthemDevice.pm 0 2014-10-01 08:00:00Z herrmannj $
 
+# open:
+# getAllSets(devName)
+# num converter with negative values
+# 99er converter (see reload)
+
 package main;
 
 use strict;
