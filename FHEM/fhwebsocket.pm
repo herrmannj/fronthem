@@ -160,9 +160,9 @@ sub writeout {
     substr ($self->{writebuffer}, 0, $num) = '';
     # clear or set select
     if (length $self->{writebuffer}) {
-      $self->{server}->{select_writable}->add($self->{socket}) unless exists $self->{server}->{select_writable}->{$self->{socket}};
+      $self->{server}->{select_writable}->add($self->{socket}) unless exists $self->{server}->{select_writable}->exists($self->{socket});
     } else {
-      $self->{server}->{select_writable}->remove($self->{socket}) if exists $self->{server}->{select_writable}->{$self->{socket}};
+      $self->{server}->{select_writable}->remove($self->{socket}) if exists $self->{server}->{select_writable}->exists({$self->{socket});
     }
   } # TODO else { something went wrong, close connection } 
 }
