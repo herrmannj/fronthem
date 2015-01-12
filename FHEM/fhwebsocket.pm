@@ -156,7 +156,7 @@ sub writeout {
   my $num = syswrite($self->{socket}, $self->{writebuffer});
   # nothing written for unkown reason, stay tuned 
   return unless (defined $num);
-  if ($num == length $self->{writebuffer} || $! == POSIX::EWOULDBLOCK) {
+  if (($num == length $self->{writebuffer}) || ($! == POSIX::EWOULDBLOCK)) {
     substr ($self->{writebuffer}, 0, $num) = '';
     # clear or set select
     if (length $self->{writebuffer}) {

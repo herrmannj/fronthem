@@ -1,5 +1,5 @@
-(function() {
-  if (typeof(jQuery) === 'undefined') {
+(function($) {
+  if (typeof($) === 'undefined') {
     var scriptPath = "fhem/pgm2/jquery.min.js";
     var xhrObj = new XMLHttpRequest(); 
     xhrObj.open('GET', scriptPath, false);
@@ -11,9 +11,8 @@
     xhrObj.abort();
     (document.head||document.getElementsByTagName('head')[0]).appendChild(newscript);
   }
-  window.fh_jQuery = $.noConflict();
-  //window.fh_jQuery = $;
-})();
+  // window.fh_jQuery = $.noConflict(true);
+})(jQuery);
 
 (function($) {
   if (typeof($.ui) === 'undefined') {
@@ -34,10 +33,9 @@
     fileref.setAttribute("href", cssFile);
     (document.head||document.getElementsByTagName('head')[0]).appendChild(fileref);
   }
-})(fh_jQuery);
+})(jQuery);
 
 function sveReadGADList(device) {
-  var $ = fh_jQuery;
   console.log('read list');
   var url = $(location).attr('pathname');
   var transfer = {};
@@ -55,7 +53,6 @@ function sveReadGADList(device) {
 }
 
 function sveRefreshGADList(device, gadList) {
-  var $ = fh_jQuery;
   console.log('refresh list');
   var gad = $.parseJSON(gadList);
   var insert = [];
@@ -87,7 +84,6 @@ function sveRefreshGADList(device, gadList) {
 }
 
 function sveLoadGADitem(device, gadName) {
-  var $ = fh_jQuery;
   console.log('load item');
   var url = $(location).attr('pathname');
   var transfer = {};
@@ -106,7 +102,6 @@ function sveLoadGADitem(device, gadName) {
 }
 
 function sveShowGADEditor(device, gadName, gadItem) {
-  var $ = fh_jQuery;
   console.log('show editor');
   var gad = $.parseJSON(gadItem);
   var mode = gad.editor;
@@ -125,7 +120,6 @@ function sveShowGADEditor(device, gadName, gadItem) {
 }
 
 function sveGADEditorItem(device, gadName, gad) {
-  var $ = fh_jQuery;
   console.log('edtor item');
   console.log(gadName);
   $('#gadeditor').replaceWith($('<table/>', {id: 'gadeditor'}));
@@ -231,7 +225,6 @@ function sveGADEditorItem(device, gadName, gad) {
 }
 
 function sveGADEditorTypeSelect(device, gadName, gad) {
-  var $ = fh_jQuery;
   console.log('type select');
   console.log(gadName);
   $('#gadeditor').replaceWith($('<table/>', {id: 'gadeditor'}));
@@ -251,7 +244,6 @@ function sveGADEditorTypeSelect(device, gadName, gad) {
 }
 
 function sveGADEditorDelete(device, gadName, gad) {
-  var $ = fh_jQuery;
   console.log('delete');
   console.log(gadName);
   $('#gadeditor').replaceWith($('<p>', {id: 'gadeditor', text: 'confirm delete: ' + gadName + ' !', style: 'color: red'}));
@@ -279,7 +271,6 @@ function sveGADEditorDelete(device, gadName, gad) {
 }
 
 function sveGADEdtorAddTypeSelect(device, gadName, gad) {
-  var $ = fh_jQuery;
   console.log('add type select');
   console.log(gad);
   $('#gadeditor').append('<tr><td>' + 'mode' + '</td><td><select id="gadEditTypeSelect"/></td></tr>');
@@ -289,7 +280,6 @@ function sveGADEdtorAddTypeSelect(device, gadName, gad) {
 }
 
 function sveGADEditorSave(device, gadName, transfer, success, error) {
-  var $ = fh_jQuery;
   console.log('gad save');
   var url = $(location).attr('pathname');
   var dataString ='dev.' + device + '=' + device + '&cmd.' + device + '=get&arg.' + device + '=webif-data&val.' + device + '=' + JSON.stringify(transfer) + '&XHR=1';
@@ -303,7 +293,6 @@ function sveGADEditorSave(device, gadName, transfer, success, error) {
 }
 
 function sveGADEdtorAddPermissionSelect() {
-  var $ = fh_jQuery;
   console.log('add permission');
   $('#gadeditor').append('<tr><td>' + 'access' + '<unknown device/td><td><select id="gadEditPermissionSelect"/></td></tr>');
   $('<option/>').val('none').text('none').appendTo('#gadEditPermissionSelect');
