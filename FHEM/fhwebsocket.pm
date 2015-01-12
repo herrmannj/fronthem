@@ -164,7 +164,10 @@ sub writeout {
     } else {
       $self->{server}->{select_writable}->remove($self->{socket}) if $self->{server}->{select_writable}->exists($self->{socket});
     }
-  } # TODO else { something went wrong, close connection } 
+  } elsif (!$self->{disconnecting}) {
+    $self->{writebuffer} = '';
+    $self->disconnect(1011); 
+  }
 }
 
 sub recv {
