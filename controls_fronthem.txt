@@ -1,6 +1,6 @@
 UPD 2015-01-11_02:06:05 20517 FHEM/01_fronthem.pm
 UPD 2015-01-11_02:06:21 20083 FHEM/31_fronthemDevice.pm
-UPD 2015-01-12_17:50:46 7021 FHEM/fhwebsocket.pm
+UPD 2015-01-12_17:56:04 7006 FHEM/fhwebsocket.pm
 UPD 2015-01-11_02:06:49 9478 FHEM/fhconverter.pm
 UPD 2015-01-08_00:25:51 12705 www/pgm2/fronthemEditor.js
 UPD 2015-01-08_00:24:08 462 www/images/default/arrow-down.svg
