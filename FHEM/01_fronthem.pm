@@ -1,5 +1,5 @@
 ##############################################
-# $Id: 01_fronthem.pm 0 2014-10-01 08:00:00Z herrmannj $
+# $Id: 01_fronthem.pm 17 2015-01-17 00:54:45Z. herrmannj $
 
 #TODO alot ;)
 #organize loading order
@@ -66,7 +66,7 @@ fronthem_Define($$)
     $hash->{helper}->{listener} = IO::Socket::INET->new(
       LocalHost => 'localhost',
       LocalPort => $port, 
-      Listen => 2, 
+      Listen => SOMAXCONN, 
       Reuse => 1 );
     $port++;
   } until (defined($hash->{helper}->{listener}));
@@ -89,6 +89,8 @@ fronthem_Define($$)
   $cfg->{id} = 'ws';
   $cfg->{port} = 2121;
   $cfg->{ipcPort} = $port;
+  # preserve 
+  $hash->{helper}->{main}->{state} = 'run';
   fronthem_StartWebsocketServer($cfg);
 
   return undef;
@@ -206,20 +208,10 @@ fronthem_ipcRead($)
     $ipcHash->{TCPDev}->close();
     delete $ipcHash->{PARENT}->{helper}->{ipc}->{$ipcHash->{NAME}};
     # TODO set state
-    # see who is using it and unregister
-    # TODO add (wss, plot) if available
-    if ($knownThreadId eq 'ws')
-    {
-      foreach my $key (keys %{$ipcHash->{PARENT}->{helper}->{sender}})
-      {
-        if ($ipcHash->{PARENT}->{helper}->{sender}->{$key}->{connection} eq $knownThreadId)
-        {
-          # disconnect fronthemClient
-          # TODO 
-        }
-      }
-    }
-    # TODO restart
+    # see who is using it and disconnect
+    fronthem_DisconnectClients($ipcHash->{PARENT}, $knownThreadId) if ($knownThreadId eq 'ws');
+    readingsSingleUpdate($defs{$ipcHash->{PARENT}->{NAME}}, $knownThreadId, "error (closed)", 1);
+    # TODO restart if not in shutdown
     return undef;
   }
 
@@ -237,7 +229,7 @@ fronthem_ipcRead($)
       {
         $up = decode_json($msg);
         Log3 ($ipcHash->{PARENT}, $up->{log}->{level}, "ipc $ipcHash->{NAME} ($id): $up->{log}->{text}") if (exists($up->{log}) && (($up->{log}->{cmd} || '') eq 'log'));
-        #keep cfg up to date
+        #keep global cfg up to date, add new items 
         if (exists($up->{message}) && (($up->{message}->{cmd} || '') eq 'monitor'))
         {
           foreach my $item (@{$up->{message}->{items}})
@@ -251,11 +243,8 @@ fronthem_ipcRead($)
           $ipcHash->{PARENT}->{helper}->{config}->{$item}->{type} = 'plot';
         }
         fronthem_ProcessDeviceMsg($ipcHash, $up) if (exists($up->{message}));
-        1;
-      } or do {
-        my $e = $@;
-        Log3 ($ipcHash->{PARENT}, 2, "ipc $ipcHash->{NAME} ($id): error $e decoding ipc msg $msg");
-      }
+      };
+      Log3 ($ipcHash->{PARENT}, 2, "ipc $ipcHash->{NAME} ($id): error $@ decoding ipc msg $msg") if ($@);
     }
     else
     {
@@ -270,6 +259,7 @@ fronthem_ipcRead($)
         $ipcHash->{PARENT}->{helper}->{ipc}->{$id}->{sock} = $ipcHash;
         # name: how selectlist name it
         $ipcHash->{PARENT}->{helper}->{ipc}->{$id}->{name} = $ipcHash->{NAME};
+        readingsSingleUpdate($defs{$ipcHash->{PARENT}->{NAME}}, $id, "open", 1);
       }
       else
       {
@@ -281,16 +271,70 @@ fronthem_ipcRead($)
   return undef;
 }
 
-# TODO remove, not used anymore
-# id: ..name of process (ie ws), $msg: what to tell
+
+# id: eq ws,wss
+# msg: whats to tell
 sub 
 fronthem_ipcWrite(@)
 {
-  my ($hash,$id,$msg) = @_;
-  my $result = $hash->{helper}->{ipc}->{$id}->{sock}->send(encode_json($msg)."\n", 0);  
+  my ($hash, $id, $msg) = @_;
+  # see if ipc id is there
+  if (!defined($hash->{helper}->{ipc}->{$id}->{sock}))
+  {
+    Log3 ($hash, 1, "$hash->{NAME} found $id closed while trying to send");
+    fronthem_DisconnectClients($hash, $id);
+    return undef;
+  }
+  my $out = encode_json($msg)."\n";
+  my $lin = length $out;
+  my $result = $hash->{helper}->{ipc}->{$id}->{sock}->send($out);
+  
+  if (!defined($result)) 
+  {
+    Log3 ($hash, 1, "$hash->{NAME} send to $id (ipc to child) unkown error");
+    fronthem_DisconnectClients($hash, $id);
+    return undef;
+  }
+  if ($result != $lin) 
+  {
+    Log3 ($hash, 1, "$hash->{NAME} send to $id (ipc to child) in $lin send $result");
+    return undef;
+  }
+  
   return undef;
 }
 
+# disonnect all clients by connection
+# connections: ws, wss, log
+sub
+fronthem_DisconnectClients(@)
+{
+  my ($hash, $conn) = @_;
+  # find all clients using the connection
+  foreach my $client (@{$hash->{helper}->{sender}})
+  {
+    fronthem_DisconnectClient($hash, $client) if ($hash->{helper}->{sender}->{$client}->{connection} eq $conn);
+  }
+  return undef;
+}
+
+# forced disonnect 
+sub
+fronthem_DisconnectClient(@)
+{
+  my ($hash, $client) = @_;
+  my $conn = $hash->{helper}->{sender}->{$client}->{connection};
+  my $ressource = $hash->{helper}->{sender}->{$client}->{ressource};
+  # remove sender part
+  delete $hash->{helper}->{sender}->{$client};
+  # remove receiver part
+  delete $hash->{helper}->{receiver}->{"$conn:$ressource"};
+  Log3 ($hash, 3, "$hash->{NAME}: client $client: forced disconnect");
+  # TODO call device disconnect
+  return undef;
+}
+
+# called by fronthemDevice
 sub
 fronthem_RegisterClient(@)
 {
@@ -471,6 +515,7 @@ fronthem_ProcessDeviceMsg(@)
     my $access = $msg->{sender};
 
     #TODO check registered device only
+    # check rejected device in case a new one is registered
     foreach my $key (keys %defs)
     {
       if (($defs{$key}{TYPE} eq 'fronthemDevice') && (ReadingsVal($key, 'identity', '') eq $access))
@@ -510,23 +555,25 @@ fronthem_ProcessDeviceMsg(@)
 }
 
 #device = name of fhem instance of fronthemDevice
-#msg is hash from fhem fronthemDevice instance, will be dispatched to forked client, an further to sv client
+#msg is hash from fhem fronthemDevice instance, will be dispatched to forked client, and further to sv client
 #msg->receiver = speaking name (eg tab)
 #msg->ressource
 #msg->message->cmd 
 sub
 fronthem_FromDevice(@)
 {
-  # TODO
-  # only write if ipc instance is available
-  # (if not: lg warning, disconnect device)
-  # write at ipc write
-
   my ($hash, $device, $msg) = @_;
+  unless (exists($hash->{helper}->{sender}->{$device}))
+  {
+    Log3 ($hash, 1, "$hash->{NAME} $device want send but isnt a sender");
+    fronthem_DisconnectClient($hash, $device);
+    return undef;
+  }
   #connection as ipc instance
   my $connection = $hash->{helper}->{sender}->{$device}->{connection};
   #ressource within ipc child, leave blank if you want t talk with the process itself
   $msg->{ressource} = $hash->{helper}->{sender}->{$device}->{ressource};
+
   $hash->{helper}->{ipc}->{$connection}->{sock}->{TCPDev}->send(encode_json($msg)."\n", 0);
   return undef;  
 }
@@ -556,14 +603,13 @@ fronthem_StartWebsocketServer(@)
 
   # close open handles
   close STDOUT;  
-  # open STDOUT, '>/dev/null';
-  open STDOUT, '>', "fronthem.out";
+  open STDOUT, '>/dev/null';
   close STDIN;
   close STDERR;  
   # open STDERR, '>/dev/null';
   open STDERR, '>>', "fronthem.err";
 
-  local $| = 1;
+  #local $| = 1;
 
   foreach my $key (keys %defs) { TcpServer_Close($defs{$key}) if ($defs{$key}->{SERVERSOCKET}); }
   foreach my $key (keys %selectlist) { POSIX::close ($selectlist{$key}->{FD}) if (defined($selectlist{$key}->{FD})); }
@@ -575,28 +621,21 @@ fronthem_StartWebsocketServer(@)
     Proto => 'tcp'
   );
   #announce my name
-  Log3 ($cfg->{hash}->{NAME}, 3, "IN CHILD start forked $id: $id:$$");
+  # Log3 ($cfg->{hash}->{NAME}, 3, "IN CHILD start forked $id: $id:$$");
   $ipc->send("$id:$$\n", 0);
   fronthem_forkLog3($ipc, 3, "$id alive with pid $$");
 
-  my $server = new IO::Socket::INET (
-    Listen => SOMAXCONN,
-    LocalPort => $cfg->{port},
-    Proto => 'tcp',
-    Reuse => 1
-  );
-  # my $flags = fcntl($server, F_GETFL, 0);
-  # fcntl($server, F_SETFL, $flags | O_NONBLOCK);
-
   my $ws = fronthem::Websocket::Server->new(
-    listen => $server,
+    listen => $cfg->{port},
     on_connect => \&fronthem_wsConnect
   );
   $ws->{'ipc'} = $ipc;
   $ws->{id} = $id;
   $ws->{buffer} = '';
   $ws->watch_readable($ipc->fileno() => \&fronthem_wsIpcRead);
-  $ws->start;
+
+  fronthem_forkLog3 ($ws->{ipc}, 1, "$ws->{id} could not open port $cfg->{port}") unless $ws->start;
+
   POSIX::_exit(0);
 }
 
@@ -616,9 +655,6 @@ sub
 fronthem_wsConnect(@)
 {
   my ($serv, $conn) = @_;
-
-  my $flags = fcntl($conn->socket(), F_GETFL, 0);
-  fcntl($conn->socket(), F_SETFL, $flags | O_NONBLOCK);
 
   $conn->on(
     handshake => \&fronthem_wsHandshake,

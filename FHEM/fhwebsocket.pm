@@ -1,5 +1,5 @@
 ##############################################
-# $Id: fhwebsocket.pm 0 2015-01-09 08:00:00Z herrmannj $
+# $Id: fhwebsocket.pm 17 2015-01-17 00:54:45Z. herrmannj $
 #
 # rewrite to support full non-blocking mode, therefore set to default
 # by Joerg Herrmann 2015
@@ -22,6 +22,7 @@ package fronthem::Websocket::Server;
 
 use Carp;
 use IO::Socket::INET;
+use Fcntl;
 use IO::Select;
 use Net::WebSocket::Server::Connection;
 use Time::HiRes qw(time);
@@ -35,11 +36,16 @@ sub start {
 
   # if we merely got a port, set up a reasonable default tcp server
   $self->{listen} = IO::Socket::INET->new(
-    Listen    => 5,
+    Listen    => SOMAXCONN,
     LocalPort => $self->{listen},
     Proto     => 'tcp',
     ReuseAddr => 1,
-  ) || croak "failed to listen on port $self->{listen}: $!" unless ref $self->{listen};
+  ) unless ref $self->{listen};
+
+  return undef unless ref $self->{listen};
+
+  my $flags = fcntl($self->{listen}, F_GETFL, 0);
+  fcntl($self->{listen}, F_SETFL, $flags | O_NONBLOCK);
 
   $self->{select_readable}->add($self->{listen});
 
@@ -57,8 +63,7 @@ sub start {
       if ($fh == $self->{listen}) {
         my $sock = $self->{listen}->accept;
         next unless $sock;
-        my $conn = new fronthem::WebSocket::Server::Connection(socket => $sock, server => $self); # TODO replace to upgrade for nonblocking
-        $conn->{writebuffer} = ''; # TODO move to constructor of connection
+        my $conn = new fronthem::WebSocket::Server::Connection(socket => $sock, server => $self);
         $self->{conns}{$sock} = {conn=>$conn, lastrecv=>time};
         $self->{select_readable}->add($sock);
         $self->{on_connect}($self, $conn);
@@ -82,7 +87,7 @@ sub start {
         $connmeta->{lastwrite} = time;
         $connmeta->{conn}->writeout();
       } else {
-        warn "filehandle $fh became writable, but no handler took responsibility for it; removing it";
+        # warn "filehandle $fh became writable, but no handler took responsibility for it; removing it";
         $self->{select_writable}->remove($fh);
       }
     }
@@ -102,6 +107,7 @@ sub start {
       $tick_next += $self->{tick_period};
     }
   }
+  return 1;
 }
 
 package fronthem::WebSocket::Server::Connection;
@@ -114,17 +120,28 @@ use Carp;
 use Protocol::WebSocket::Handshake::Server;
 use Protocol::WebSocket::Frame;
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
+use Fcntl;
+use Errno qw(:POSIX);
 use Encode;
-
 use Time::HiRes qw(time);
-
 use Net::WebSocket::Server::Connection;
 our @ISA = qw(Net::WebSocket::Server::Connection);
 
+sub new {
+    my ($class, %params) = @_;
+
+    # Call the constructor of the parent class, Person.
+    my $self = $class->SUPER::new( %params );
+    # Add few more attributes
+    $self->{writebuffer} = '';
+    my $flags = fcntl($self->socket(), F_GETFL, 0);
+    fcntl($self->socket(), F_SETFL, $flags | O_NONBLOCK);
+    bless $self, $class;
+    return $self;
+}
+
 sub send {
   my ($self, $type, $data) = @_;
-
-local $| = 1;
 
   if ($self->{handshake}) {
     carp "tried to send data before finishing handshake";
@@ -152,21 +169,28 @@ sub write {
 
 sub writeout {
   my ($self) = @_;
-  # TODO why ? return unless $self->{writebuffer}; 
+
   my $num = syswrite($self->{socket}, $self->{writebuffer});
-  # nothing written for unkown reason, stay tuned 
-  return unless (defined $num);
-  if (($num == length $self->{writebuffer}) || ($! == POSIX::EWOULDBLOCK)) {
-    substr ($self->{writebuffer}, 0, $num) = '';
-    # clear or set select
-    if (length $self->{writebuffer}) {
-      $self->{server}->{select_writable}->add($self->{socket}) unless $self->{server}->{select_writable}->exists($self->{socket});
-    } else {
-      $self->{server}->{select_writable}->remove($self->{socket}) if $self->{server}->{select_writable}->exists($self->{socket});
-    }
-  } elsif (!$self->{disconnecting}) {
+
+  # connection refused, disconnect
+  if (!defined($num) && ($! != POSIX::EAGAIN))
+  {
+    return undef if ($self->{disconnecting});
     $self->{writebuffer} = '';
-    $self->disconnect(1011); 
+    $self->disconnect(1011);
+    return undef;
+  }
+  
+  if (defined($num)) {
+    substr ($self->{writebuffer}, 0, $num) = '';
+  } else {
+    $num = 0;
+  }
+  # (re-)set select
+  if (length $self->{writebuffer}) {
+    $self->{server}->{select_writable}->add($self->{socket}) unless $self->{server}->{select_writable}->exists($self->{socket});
+  } else {
+    $self->{server}->{select_writable}->remove($self->{socket}) if $self->{server}->{select_writable}->exists($self->{socket});
   }
 }
 
@@ -190,7 +214,8 @@ sub recv {
       $self->_event(on_handshake => $self->{handshake});
       return unless do { local $SIG{__WARN__} = sub{}; $self->{socket}->connected };
 
-      syswrite($self->{socket}, $self->{handshake}->to_string);
+      # syswrite($self->{socket}, $self->{handshake}->to_string);
+      $self->write($self->{handshake}->to_string);
       delete $self->{handshake};
 
       $self->{parser} = new Protocol::WebSocket::Frame();
