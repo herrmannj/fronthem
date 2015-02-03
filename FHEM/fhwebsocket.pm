@@ -1,5 +1,5 @@
 ##############################################
-# $Id: fhwebsocket.pm 18 2015-01-18 12:34:48Z. herrmannj $
+# $Id: fhwebsocket.pm 20 2015-02-03 16:14:14Z. herrmannj $
 #
 # rewrite to support full non-blocking mode, therefore set to default
 # by Joerg Herrmann 2015

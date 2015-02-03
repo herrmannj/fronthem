@@ -1,5 +1,5 @@
 ##############################################
-# $Id: fhconverter.pm 0 2015-11-10 08:00:00Z herrmannj $
+# $Id: fhconverter.pm 20 2015-02-03 16:14:14Z. herrmannj $
 
 package fronthem;
 use strict;
@@ -260,7 +260,7 @@ sub OnOff(@)
   if ($param->{cmd} eq 'send')
   {
     $param->{gad} = $gad;
-		$param->{gadval} = (lc($event) eq 'on')?'1':'0';
+		$param->{gadval} = (lc($event) eq 'off')?'0':'1';
 		$param->{gads} = [];
     return undef;
   }

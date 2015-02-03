@@ -1,5 +1,5 @@
 ##############################################
-# $Id: 01_fronthem.pm 18 2015-01-18 12:34:48Z. herrmannj $
+# $Id: 01_fronthem.pm 20 2015-02-03 16:14:14Z. herrmannj $
 
 #TODO alot ;)
 #organize loading order
@@ -566,7 +566,7 @@ fronthem_FromDevice(@)
   unless (exists($hash->{helper}->{sender}->{$device}))
   {
     Log3 ($hash, 1, "$hash->{NAME} $device want send but isnt a sender");
-    fronthem_DisconnectClient($hash, $device);
+    # TODO device must be disconnected !!    fronthem_DisconnectClient($hash, $device);
     return undef;
   }
   #connection as ipc instance
