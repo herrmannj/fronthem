@@ -1,5 +1,5 @@
 ##############################################
-# $Id: 01_fronthem.pm 20 2015-02-03 16:14:14Z. herrmannj $
+# $Id: 01_fronthem.pm 21 2015-02-13 20:25:09Z. herrmannj $
 
 #TODO alot ;)
 #organize loading order
@@ -29,6 +29,7 @@ use IO::Select;
 #use Net::WebSocket::Server;
 use fhwebsocket;
 use JSON;
+use utf8;
 
 use Data::Dumper;
 
@@ -227,7 +228,8 @@ fronthem_ipcRead($)
       # TODO check if a dispatcher is set
       eval 
       {
-        $up = decode_json($msg);
+        $up = from_json($msg);
+    
         Log3 ($ipcHash->{PARENT}, $up->{log}->{level}, "ipc $ipcHash->{NAME} ($id): $up->{log}->{text}") if (exists($up->{log}) && (($up->{log}->{cmd} || '') eq 'log'));
         #keep global cfg up to date, add new items 
         if (exists($up->{message}) && (($up->{message}->{cmd} || '') eq 'monitor'))
@@ -279,15 +281,15 @@ fronthem_ipcWrite(@)
 {
   my ($hash, $id, $msg) = @_;
   # see if ipc id is there
-  if (!defined($hash->{helper}->{ipc}->{$id}->{sock}))
+  if (!defined($hash->{helper}->{ipc}->{$id}->{sock}->{TCPDev}))
   {
     Log3 ($hash, 1, "$hash->{NAME} found $id closed while trying to send");
     fronthem_DisconnectClients($hash, $id);
     return undef;
   }
-  my $out = encode_json($msg)."\n";
+  my $out = to_json($msg)."\n";
   my $lin = length $out;
-  my $result = $hash->{helper}->{ipc}->{$id}->{sock}->send($out);
+  my $result = $hash->{helper}->{ipc}->{$id}->{sock}->{TCPDev}->send($out);
   
   if (!defined($result)) 
   {
@@ -569,12 +571,11 @@ fronthem_FromDevice(@)
     # TODO device must be disconnected !!    fronthem_DisconnectClient($hash, $device);
     return undef;
   }
-  #connection as ipc instance
+  #connection as ipc instance, eg ws, wss
   my $connection = $hash->{helper}->{sender}->{$device}->{connection};
   #ressource within ipc child, leave blank if you want t talk with the process itself
   $msg->{ressource} = $hash->{helper}->{sender}->{$device}->{ressource};
-
-  $hash->{helper}->{ipc}->{$connection}->{sock}->{TCPDev}->send(encode_json($msg)."\n", 0);
+  fronthem_ipcWrite($hash, $connection, $msg);
   return undef;  
 }
 
@@ -647,7 +648,7 @@ fronthem_forkLog3(@)
   $msg->{log}->{cmd} = 'log';
   $msg->{log}->{level} = $level;
   $msg->{log}->{text} = $text;
-  $ipc->send(encode_json($msg)."\n", 0);
+  $ipc->send(to_json($msg)."\n", 0);
   return undef;
 }
 
@@ -728,7 +729,10 @@ fronthem_wsIpcRead(@)
   $serv->{buffer} .= $msg;
   while (($serv->{buffer} =~ m/\n/) && (($msg, $serv->{buffer}) = split /\n/, $serv->{buffer}, 2))
   {
-    $msg = decode_json($msg);
+    eval {
+      $msg = decode_json($msg);
+    };
+    fronthem_forkLog3 ($serv->{ipc}, 1, "$serv->{id} ipc decoding error $@") if ($@);
     fronthem_wsProcessInboundCmd($serv, $msg);
   }
   return undef;
@@ -745,7 +749,7 @@ fronthem_wsProcessInboundCmd(@)
   fronthem_forkLog3 ($serv->{ipc}, 4, "$serv->{id} send to client".encode_json($msg->{message}));
   foreach my $conn ($serv->connections())
   {
-    $conn->send_utf8(encode_json($msg->{message})) if ($conn->{id} eq $msg->{ressource});
+    $conn->send_utf8(to_json($msg->{message})) if ($conn->{id} eq $msg->{ressource});
   }
   return undef;
 }

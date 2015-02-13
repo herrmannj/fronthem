@@ -1,2 +1,2 @@
 # fronthem
-fronthem Schnittstele für FHEM
+fronthem websocket Schnittstelle für FHEM

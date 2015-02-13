@@ -1,5 +1,5 @@
 ##############################################
-# $Id: 31_fronthemDevice.pm 0 2014-10-01 08:00:00Z herrmannj $
+# $Id: 31_fronthemDevice.pm 21 2015-02-13 20:25:09Z. herrmannj $
 
 # open:
 # getAllSets(devName)
@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 use JSON;
+use utf8;
 use URI::Escape;
 use Time::HiRes;
 use fhconverter;
@@ -31,7 +32,8 @@ fronthemDevice_Initialize(@)
   $hash->{UndefFn}      = "fronthemDevice_Undef";
   $hash->{ShutdownFn}   = "fronthemDevice_Shutdown";
   $hash->{FW_detailFn}  = "fronthemDevice_fwDetail";
-  $hash->{AttrList}     = "configFile ".$readingFnAttributes;
+  $hash->{AttrList}     = "configFile ".
+                           "whitelist:true,false ".$readingFnAttributes;
 
   $data{FWEXT}{fronthemDevice}{SCRIPT}  = "fronthemEditor.js";
 }
@@ -163,8 +165,8 @@ fronthemDevice_Get(@)
     }
     elsif ($transfer->{cmd} eq 'gadItem')
     {
-      #prepare list and preload val
-      #TODO there is a small chance that the item was deleted from other client
+      # prepare list and preload val
+      # TODO there is a small chance that the item was deleted from other client
       return unless defined($transfer->{item});
       return unless exists($defs{$hash->{helper}->{gateway}}->{helper}->{config}->{$transfer->{item}});
       my $result;
@@ -175,15 +177,20 @@ fronthemDevice_Get(@)
       $result->{reading} = '' if (!defined($result->{reading}));
       $result->{converter} = '' if (!defined($result->{converter}));
       $result->{set} = '' if (!defined($result->{set}));
-      $result->{read} = ($hash->{helper}->{config}->{$transfer->{item}}->{read} == 1)?'checked':'';
-      $result->{write} = ($hash->{helper}->{config}->{$transfer->{item}}->{write} == 1)?'checked':'';
+
+      # individual permissions enabled ?
+      $result->{whitelist} = AttrVal($hash->{NAME}, 'whitelist', 'true');
+      # get stroed permissions
+      $result->{read} = (($hash->{helper}->{config}->{$transfer->{item}}->{read} || 0) == 1)?'checked':'';
+      $result->{write} = (($hash->{helper}->{config}->{$transfer->{item}}->{write} || 0) == 1)?'checked':'';
+
       foreach my $key (keys %defs) 
       {
         push (@{$result->{deviceList}}, $key) unless ($key =~ /FHEMWEB:.*/);
       }
       @{$result->{deviceList}} = sort @{$result->{deviceList}};
       @{$result->{converterList}} = sort @{$hash->{helper}->{converter}};
-      #type:mode, js editor support
+      # type:mode, js editor support
       $result->{editor} = $result->{type};
       return encode_json($result);  
     }
@@ -215,9 +222,11 @@ fronthemDevice_Get(@)
           @{$result->{readings}} = sort @{$result->{readings}};
         }
         $result->{result} = 'ok';
-        my $sl = fhem "set $transfer->{device} ?";
-        $sl =~ s/^.*? choose one of //g;
-        $sl =~ s/:[^\s\\]+//g;
+        # TODO remove if tested. prevent erroneous log entry 
+        # my $sl = fhem "set $transfer->{device} ?";
+        # $sl =~ s/^.*? choose one of //g;
+        # $sl =~ s/:[^\s\\]+//g;
+        my $sl = getAllSets($transfer->{device});
         @{$result->{sets}} = split(' ', $sl);
         push (@{$result->{sets}}, 'state');
         @{$result->{sets}} = sort @{$result->{sets}};
@@ -331,11 +340,11 @@ fronthemDevice_Notify($$)
   }
 
   return undef if(AttrVal($hash->{NAME}, "disable", 0) == 1);
-
-  my $result;
+  return undef unless (ReadingsVal($hash->{NAME}, 'state', 'disconnected') eq 'connected');
 
   # TODO exit here if gateway is absend
-  # TODO exit here if disconnected
+
+  my $result;
 
   #of interest, device is in global (context fronthem parent device) list of known device->reading->gad ?
   if (defined($hash->{helper}->{gateway}) && exists($defs{$hash->{helper}->{gateway}}->{helper}->{listen}->{$ntfyDevName}))
@@ -400,10 +409,13 @@ fronthemDevice_DoConverter(@)
   my $gad = $param->{gad};
   my $cmd = $param->{cmd};
   #cmd == get||send: device is allowed to read the via that gad ?
-  if ($cmd =~/get|send/)
+  if ($cmd =~ /get|send/)
   {
-    #return undef $hash->{helper}->{config}->{$gad}->{read};
-    Log3 ($hash, 3, "$hash->{NAME} no read permission for $gad") unless $hash->{helper}->{config}->{$gad}->{read};
+    if (!$hash->{helper}->{config}->{$gad}->{read} && (AttrVal($hash->{NAME}, 'whitelist', 'true') eq 'true'))
+    {
+      Log3 ($hash, 3, "$hash->{NAME} no read permission for $gad");
+      return undef;
+    }
     #TODO check pin assignment
     #if (defined($hash->{helper}->{config}->{$gad}->{NAME_OF_GAD_THAT_IS_USED_TO_TEST}))
     #{
@@ -413,8 +425,11 @@ fronthemDevice_DoConverter(@)
   #cmd == rcv: device is allowed to execute (write) via that gad ?
   if ($cmd eq 'rcv')
   {
-    #return undef unless $hash->{helper}->{config}->{$gad}->{write};
-    Log3 ($hash, 3, "$hash->{NAME} no write permission for $gad") unless $hash->{helper}->{config}->{$gad}->{write};
+    if (!$hash->{helper}->{config}->{$gad}->{write} && (AttrVal($hash->{NAME}, 'whitelist', 'true') eq 'true'))
+    {
+      Log3 ($hash, 3, "$hash->{NAME} no write permission for $gad");
+      return undef;
+    }
     #TODO check pin assignment
     #if (defined($hash->{helper}->{config}->{$gad}->{NAME_OF_GAD_THAT_IS_USED_TO_TEST}))
     #{
@@ -425,7 +440,7 @@ fronthemDevice_DoConverter(@)
   {
     #if there is a return value from converter, the converter may have chosen thats nothing to do, done by itself or a error is risen
     return undef if ($result eq 'done');
-    return Log3 ($hash, 1, "$hash->{NAME}: $result");
+    return Log3 ($hash, 3, "$hash->{NAME}: $result");
   }
   if ($@)
   {
@@ -445,8 +460,10 @@ fronthemDevice_DoConverter(@)
   {
     my $device = $param->{device};
     my $set = fronthemDevice_ConfigVal($hash, $gad, 'set');
+    # exit here if no set is given
+    return undef unless $set;
     $set =~ s/^state// if ($param->{reading} eq 'state');
-    if ($set !~/.*\$.*/)
+    if ($set !~ /.*\$.*/)
     {
       fhem "set $device $set $param->{result}";
       return undef;
@@ -609,14 +626,27 @@ fronthemDevice_fromDriver(@)
     readingsEndUpdate($hash, 1);
     return undef;
   }
+  
   if ($msg->{message}->{cmd} eq 'monitor')
   {
     $hash->{helper}->{monitor} = $msg->{message}->{items};
     foreach my $gad (@{$hash->{helper}->{monitor}})
     {
-      #clear cache count
+      # TODO for now this is hardcoded
+      # extension plugin infrastucture call
+      # allow actions defined by a external plugin whitout the need for manual converter setups
+      if ($gad =~ /internal\..*/)
+      {
+        my $msg;
+        $msg->{receiver} = $hash->{NAME};
+        $msg->{message}->{cmd} = 'item';
+        @{$msg->{message}->{items}} = ($gad, 0 + gettimeofday());
+        fronthemDevice_toDriver($hash, $msg);
+        next;
+      }
+      # clear cache count
       $hash->{helper}->{cache}->{$gad}->{count} = 0;
-      #call if a converter is set
+      # call if a converter is set
       if (fronthemDevice_ConfigVal($hash, $gad, 'converter'))
       {
         my $param;

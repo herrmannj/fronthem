@@ -140,11 +140,13 @@ function sveGADEditorItem(device, gadName, gad) {
   $('#gadeditor').append('<tr><td>' + 'reading' + '</td><td align="right"><input id="gadEditReading" type="text" size="55" value="' + gad.reading +'"/></td></tr>');
   $('#gadeditor').append('<tr><td>' + 'converter' + '</td><td align="right"><input id="gadEditConverter" type="text" size="55" value="' + gad.converter +'"/></td></tr>');
   $('#gadeditor').append('<tr><td>' + 'cmd set' + '</td><td align="right"><input id="gadEditSet" type="text" size="55" value="' + gad.set +'"/></td></tr>');
-  $('#gadeditor').append('<tr><td>&nbsp;</td><td>&nbsp;</td></tr>');
-  $('#gadeditor').append('<tr><th colspan="2">permission for ' + device + '</th></tr>');
-  $('#gadeditor').append('<tr><td ><input type="checkbox" id="gadEditRead" ' + gad.read + '>read</td><td align="right"> PIN GAD: <input type="text" size="45" id="gadEditReadConverter" value="kommt später"></td>');
-  $('#gadeditor').append('<tr><td ><input type="checkbox" id="gadEditWrite" ' + gad.write + '>write</td><td align="right"> PIN GAD: <input type="text" size="45" id="gadEditWriteConverter" value="auch ;-)"></td>');
+  $('#gadeditor').append('<tr class="permission"><td>&nbsp;</td><td>&nbsp;</td></tr>');
+  $('#gadeditor').append('<tr class="permission"><th colspan="2">permission for ' + device + '</th></tr>');
+  $('#gadeditor').append('<tr class="permission"><td ><input type="checkbox" id="gadEditRead" ' + gad.read + '>read</td><td align="right"> PIN GAD: <input type="text" size="45" id="gadEditReadConverter" value="kommt später"></td>');
+  $('#gadeditor').append('<tr class="permission"><td ><input type="checkbox" id="gadEditWrite" ' + gad.write + '>write</td><td align="right"> PIN GAD: <input type="text" size="45" id="gadEditWriteConverter" value="auch ;-)"></td>');
   
+  if (gad.whitelist === 'false') $('.permission').hide();
+
   //preload autocomplete device
   $('#gadEditDevice').autocomplete({source: gad.deviceList, minLength: 0});
   $('#gadEditConverter').autocomplete({source: gad.converterList, minLength: 0});

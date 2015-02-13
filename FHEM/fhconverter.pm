@@ -1,5 +1,5 @@
 ##############################################
-# $Id: fhconverter.pm 20 2015-02-03 16:14:14Z. herrmannj $
+# $Id: fhconverter.pm 21 2015-02-13 20:25:09Z. herrmannj $
 
 package fronthem;
 use strict;
@@ -196,7 +196,8 @@ sub NumDirect(@)
   }
   if ($param->{cmd} eq 'send')
   {
-    $event =~ s/[^0-9.\-\+]//g;
+    return "NumDirect converter got [$event] from $device, $reading but cant interpret it as a number" unless $event =~ /\D*([+-]{0,1}\d+[.]{0,1}\d*).*?/;
+    $event = $1;
     $param->{gad} = $gad;
     $param->{gadval} = $event;
     $param->{gads} = [];
@@ -207,7 +208,8 @@ sub NumDirect(@)
 		my $min = $args[0];
 		my $max = $args[1];
 		my $adj = 0;
-		$gadval =~ s/[^0-9.\-\+]//g;
+		return "NumDirect converter received [$gadval] but cant interpret it as a number" unless $gadval =~ /\D*([+-]{0,1}\d+[.]{0,1}\d*).*?/;
+    $gadval = $1;
 
 		if (defined($min) && ($gadval < $min)) 
 		{
@@ -303,11 +305,11 @@ sub NumDisplay(@)
   }
   if ($param->{cmd} eq 'send')
   {
-    $param->{gad} = $gad;
-		$event =~ /\D*([+-]{0,1}\d+[,.]{0,1}\d*).*/;
+    return "NumDisplay converter got [$event] from $device, $reading but cant interpret it as a number" unless $event =~ /\D*([+-]{0,1}\d+[.]{0,1}\d*).*?/;
+    $event = $1;
 		my $format = (@args)?$args[0]:"%.1f";
+    $param->{gad} = $gad;
 		$param->{gadval} = sprintf($format, $1);
-		#$param->{gadval} = sprintf("%.1f", $1);
 		$param->{gads} = [];
     return undef;
   }
