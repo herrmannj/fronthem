@@ -59,15 +59,16 @@ function sveRefreshGADList(device, gadList) {
   var keys = Object.keys(gad);
   var len = keys.length;
   keys.sort();
+  insert.push('<input id="filterTable_input">');
   insert.push('<table id="gadlisttable" style="width:636px">');
-  insert.push('<th></th><th>gad</th><th>device</th><th>r</th><th>w</th>');
+  insert.push('<thead><tr><th></th><th>gad</th><th>device</th><th>r</th><th>w</th></tr></thead><tbody id="gadlisttablebody">');
   //$.each(gad, function(i, item) {
   //  insert.push('<tr id=' + i + ' style="cursor:pointer"><td><a>' + i + '</a></td><td>nnn</td></tr>');
   //});
   for (var i = 0; i < len; i++)
   {
     var key = keys[i];
-    insert.push('<tr id=' + key + ' style="cursor:pointer" class="' + ((i%2)?'even':'odd') + '"><td>' + 
+    insert.push('<tr id=' + key + ' style="cursor:pointer"><td>' + 
       ((gad[key]['monitor'] == 1)?'<img height="12" src="fhem/images/default/desktop.svg">':'') + '</td><td><a>' + 
       key + '</a></td><td>' +       
       ((typeof gad[key]['device'] == 'string')?gad[key]['device']:'') + '</td><td>' +
@@ -76,11 +77,43 @@ function sveRefreshGADList(device, gadList) {
     console.log(gad[key]['device']);
   }
   
-  insert.push('</table>');
+  insert.push('</tbody></table>');
   $('#gadlist').html(insert.join(''));
   $('#gadlisttable tr').click(function () {
     sveLoadGADitem(device, $(this).attr('id'));
   });
+  $("#filterTable_input").keyup(function () {
+	    //split the current value of searchInput
+	    var data = this.value.split(" ");
+	    //create a jquery object of the rows
+	    var jo = $("#gadlisttablebody").find("tr");
+	    if (this.value == "") {
+	        jo.show();
+	        return;
+	    }
+	    //hide all the rows
+	    jo.hide();
+	    //Recusively filter the jquery object to get results.
+	    jo.filter(function (i, v) {
+	        var $t = $(this);
+	        for (var d = 0; d < data.length; ++d) {
+	            if ($t.is(":contains('" + data[d] + "')")) {
+	                return true;
+	            }
+	        }
+	        return false;
+	    })
+	    //show the rows that match.
+	    .show();
+	}).focus(function () {
+	    this.value = "";
+	    $(this).css({
+	        "color": "black"
+	    });
+	    $(this).unbind('focus');
+	}).css({
+	    "color": "#C0C0C0"
+	});
 }
 
 function sveLoadGADitem(device, gadName) {
