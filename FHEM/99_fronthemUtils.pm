@@ -24,6 +24,7 @@ sub UZSU_execute($$)
   
   $uzsu = decode_json($uzsu);
   fhem('delete wdt_'.$device.'_uzsu');
+  if ($uzsu->{active}){
   my $weekdays_part = " ";
   for(my $i=0; $i < @{$uzsu->{list}}; $i++) {
       my $weekdays = $uzsu->{list}[$i]->{rrule};
@@ -34,10 +35,6 @@ sub UZSU_execute($$)
   }
   fhem('define wdt_'.$device.'_uzsu'.' WeekdayTimer '.$device.' en '.$weekdays_part);
   fhem('attr wdt_'.$device.'_uzsu room UZSU');
-  if ($uzsu->{active}){    
-     fhem('attr wdt_'.$device.'_uzsu disable 0');
-  } else {
-     fhem('attr wdt_'.$device.'_uzsu disable 1');
   }    
 }
 
