@@ -12,6 +12,14 @@ fronthemUtils_Initialize($$)
   my ($hash) = @_;
 }
 
+sub fronthem_decodejson($) {
+ return decode_json($_[0]);
+}  
+
+sub fronthem_encodejson($) {
+ return encode_json($_[0]);
+}  
+
 
 ###############################################################################
 #
@@ -24,6 +32,7 @@ sub UZSU_execute($$)
   
   $uzsu = decode_json($uzsu);
   fhem('delete wdt_'.$device.'_uzsu');
+  if ($uzsu->{active}){
   my $weekdays_part = " ";
   for(my $i=0; $i < @{$uzsu->{list}}; $i++) {
       my $weekdays = $uzsu->{list}[$i]->{rrule};
@@ -34,22 +43,18 @@ sub UZSU_execute($$)
   }
   fhem('define wdt_'.$device.'_uzsu'.' WeekdayTimer '.$device.' en '.$weekdays_part);
   fhem('attr wdt_'.$device.'_uzsu room UZSU');
-  if ($uzsu->{active}){    
-     fhem('attr wdt_'.$device.'_uzsu disable 0');
-  } else {
-     fhem('attr wdt_'.$device.'_uzsu disable 1');
   }    
 }
+
 
 package fronthem;
 use strict;
 use warnings;
-use JSON;
 
 ###############################################################################
 # For use with UZSU-Widget in SV and UZSU-notify in fhem
 # Setreading a device reading using JSON conversion (gadval => reading=decode_json() => setval => encode_json(reading) )
-# the reading (e.g. "uzsu") must be created manually for each USU-enabled device in fhem using "setreading <device> uzsu {}"
+# the reading ("uzsu") must be created manually for each UZSU-enabled device in fhem using "setreading <device> uzsu {}"
 # in the fhem commandline
 ###############################################################################
 
@@ -74,13 +79,13 @@ sub UZSU(@)
   if ($param->{cmd} eq 'send')
   {
     $param->{gad} = $gad;
-	$param->{gadval} = decode_json(main::ReadingsVal($device, $reading, ''));
+	$param->{gadval} = main::fronthem_decodejson(main::ReadingsVal($device, $reading, ''));
 	$param->{gads} = [];
     return undef;
   }
   elsif ($param->{cmd} eq 'rcv')
   {
-	$gadval = encode_json($gadval);
+	$gadval = main::fronthem_encodejson($gadval);
 	$gadval =~ s/;/;;/ig;
 	$param->{result} = main::fhem("setreading $device $reading $gadval");
 	$param->{results} = [];
