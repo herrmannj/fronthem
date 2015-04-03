@@ -307,10 +307,19 @@ sub NumDisplay(@)
   {
     return "NumDisplay converter got [$event] from $device, $reading but cant interpret it as a number" unless $event =~ /\D*([+-]{0,1}\d+[.]{0,1}\d*).*?/;
     $event = $1;
-		my $format = (@args)?$args[0]:"%.1f";
     $param->{gad} = $gad;
-		$param->{gadval} = sprintf($format, $1);
-		$param->{gads} = [];
+    
+    if (@args and ($args[0] eq 'bin')) 
+    {
+      # binarize: only return 1 or 0
+      $param->{gadval} = ($1 > 0) ? 1 : 0;
+    }
+    else 
+    {
+      my $format = (@args)?$args[0]:"%.1f";
+      $param->{gadval} = sprintf($format, $1);
+    }
+    $param->{gads} = [];
     return undef;
   }
   elsif ($param->{cmd} eq 'rcv')
