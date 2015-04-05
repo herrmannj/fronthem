@@ -4,6 +4,7 @@
 package fronthem;
 use strict;
 use warnings;
+use String::Escape;
 
 ###############################################################################
 #
@@ -429,7 +430,8 @@ sub UserCode(@)
   {
     return "done" if (@args < 2); # we are read-only if we havent a second arg
 
-    my $VALUE = $gadval;
+    # make sure to properly escape untrusted code
+    my $VALUE = String::Escape::quote(String::Escape::backslash($gadval));
     $param->{result} = eval $args[1];
     $param->{results} = [];
     return undef;
