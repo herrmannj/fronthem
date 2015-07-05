@@ -28,24 +28,34 @@ sub fronthem_encodejson($) {
 ###############################################################################
 sub UZSU_execute($$)
 {
-  my ($device, $uzsu) = @_;
-  
-  $uzsu = decode_json($uzsu);
-  fhem('delete wdt_'.$device.'_uzsu');
-  if ($uzsu->{active}){
-  my $weekdays_part = " ";
-  for(my $i=0; $i < @{$uzsu->{list}}; $i++) {
-      my $weekdays = $uzsu->{list}[$i]->{rrule};
-      $weekdays = substr($weekdays,18,50);  
-      if (($uzsu->{list}[$i]->{active})) {
-          $weekdays_part = $weekdays_part.' '.$weekdays.'|'.$uzsu->{list}[$i]->{time}.'|'.$uzsu->{list}[$i]->{value};
-      }
-  }
-  fhem('define wdt_'.$device.'_uzsu'.' WeekdayTimer '.$device.' en '.$weekdays_part);
-  fhem('attr wdt_'.$device.'_uzsu room UZSU');
-  }    
-}
+ my ($device, $uzsu) = @_;
 
+ $uzsu = decode_json($uzsu);
+ if ($uzsu->{active}){
+ my $weekdays_part = " ";
+ for(my $i=0; $i < @{$uzsu->{list}}; $i++) {
+     my $weekdays = $uzsu->{list}[$i]->{rrule};
+     $weekdays = substr($weekdays,18,50);
+     if (($uzsu->{list}[$i]->{active})) {
+         if ($uzsu->{list}[$i]->{event} eq 'time'){
+         $weekdays_part = $weekdays_part.' '.$weekdays.'|'.$uzsu->{list}[$i]->{time}.'|'.$uzsu->{list}[$i]->{value};
+         }
+       else {
+          # Bugfix below: because sunset_abs from 99_sunrise_el does not work if max-time = ""
+          if ($uzsu->{list}[$i]->{timeMin} ne '' and $uzsu->{list}[$i]->{timeMax} ne '') {
+            $weekdays_part = $weekdays_part.' '.$weekdays.'|{'.$uzsu->{list}[$i]->{event}.'_abs("REAL",'.$uzsu->{list}[$i]->{timeOffset} * 60 .',"'.$uzsu->{list}[$i]->{timeMin}.'","'.$uzsu->{list}[$i]->{timeMax}.'")}|'.$uzsu->{list}[$i]->{value};
+          }
+          else {
+          $weekdays_part = $weekdays_part.' '.$weekdays.'|{'.$uzsu->{list}[$i]->{event}.'_abs("REAL",'.$uzsu->{list}[$i]->{timeOffset} * 60 .',,)}|'.$uzsu->{list}[$i]->{value};
+          }
+       }
+     }
+ }
+ fhem('defmod wdt_uzsu_'.$device.' WeekdayTimer '.$device.' en '.$weekdays_part);
+ fhem('attr wdt_uzsu_'.$device.' room UZSU');
+ #fhem('save');   # use only if you want to save WDT settings immediately.
+ }
+}
 
 package fronthem;
 use strict;
