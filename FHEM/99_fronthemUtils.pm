@@ -31,7 +31,7 @@ sub UZSU_execute($$)
  my ($device, $uzsu) = @_;
 
  $uzsu = decode_json($uzsu);
- if ($uzsu->{active}){
+
  my $weekdays_part = " ";
  for(my $i=0; $i < @{$uzsu->{list}}; $i++) {
      my $weekdays = $uzsu->{list}[$i]->{rrule};
@@ -52,9 +52,14 @@ sub UZSU_execute($$)
      }
  }
  fhem('defmod wdt_uzsu_'.$device.' WeekdayTimer '.$device.' en '.$weekdays_part);
+ if ($uzsu->{active}){
+ fhem('attr wdt_uzsu_'.$device.' disable 0');
+} else {
+ fhem('attr wdt_uzsu_'.$device.' disable 1');
+}
  fhem('attr wdt_uzsu_'.$device.' room UZSU');
  #fhem('save');   # use only if you want to save WDT settings immediately.
- }
+ 
 }
 
 package fronthem;
