@@ -36,6 +36,15 @@ sub UZSU_execute($$)
  for(my $i=0; $i < @{$uzsu->{list}}; $i++) {
      my $weekdays = $uzsu->{list}[$i]->{rrule};
      $weekdays = substr($weekdays,18,50);
+     # if the structure contains the holidays list, use it!
+     if {list}[$i]->{holidays} {
+     	if {list}[$i]->{holiday}->{weekend} {
+	     	$weekdays = $weekdays . ',$we';
+     	}
+     	if {list}[$i]->{holiday}->{work} {
+	     	$weekdays = $weekdays . ',$!we';
+     	}
+     }
      if (($uzsu->{list}[$i]->{active})) {
          if ($uzsu->{list}[$i]->{event} eq 'time'){
          $weekdays_part = $weekdays_part.' '.$weekdays.'|'.$uzsu->{list}[$i]->{time}.'|'.$uzsu->{list}[$i]->{value};
@@ -49,6 +58,14 @@ sub UZSU_execute($$)
           $weekdays_part = $weekdays_part.' '.$weekdays.'|{'.$uzsu->{list}[$i]->{event}.'_abs("REAL",'.$uzsu->{list}[$i]->{timeOffset} * 60 .',,)}|'.$uzsu->{list}[$i]->{value};
           }
        }
+     }
+     if {list}[$i]->{condition} {
+     	if {list}[$i]->{condition}->{conditionType} eq 'Perl' {
+     		$weekdays_part = $weekdayspart.'|('.{list}[$i]->{condition}->{conditionDevicePerl}.')'
+     	}
+     	else {
+     		$weekdays_part = $weekdayspart.'|(ReadingsVal("'.{list}[$i]->{condition}->{conditionDevicePerl}.'","'.{list}[$i]->{condition}->{conditionType}.'","") eq "'.{list}[$i]->{condition}->{conditionValue}.'")'
+     	}
      }
  }
  fhem('defmod wdt_uzsu_'.$device.' WeekdayTimer '.$device.' en '.$weekdays_part);
