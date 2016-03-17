@@ -59,6 +59,7 @@ sub UZSU_execute($$)
           }
        }
      }
+     # if the structure contains a condition, use it!
      if {list}[$i]->{condition} {
      	if {list}[$i]->{condition}->{conditionType} eq 'Perl' {
      		$weekdays_part = $weekdayspart.'|('.{list}[$i]->{condition}->{conditionDevicePerl}.')'
@@ -67,16 +68,16 @@ sub UZSU_execute($$)
      		$weekdays_part = $weekdayspart.'|(ReadingsVal("'.{list}[$i]->{condition}->{conditionDevicePerl}.'","'.{list}[$i]->{condition}->{conditionType}.'","") eq "'.{list}[$i]->{condition}->{conditionValue}.'")'
      	}
      }
- }
- fhem('defmod wdt_uzsu_'.$device.' WeekdayTimer '.$device.' en '.$weekdays_part);
- if ($uzsu->{active}){
- fhem('attr wdt_uzsu_'.$device.' disable 0');
-} else {
- fhem('attr wdt_uzsu_'.$device.' disable 1');
-}
- fhem('attr wdt_uzsu_'.$device.' room UZSU');
- #fhem('save');   # use only if you want to save WDT settings immediately.
- 
+	fhem('defmod wdt_uzsu_'.$device.' WeekdayTimer '.$device.' en '.$weekdays_part);
+ 	if ($uzsu->{active}){
+	 	fhem('attr wdt_uzsu_'.$device.' disable 0');
+	} else {
+ 		fhem('attr wdt_uzsu_'.$device.' disable 1');
+	}
+ 	fhem('attr wdt_uzsu_'.$device.'-'.$i.' room UZSU');
+ 	fhem('attr wdt_uzsu_'.$device.'-'.$i.' group '.$device);
+ 	#fhem('save');   # use only if you want to save WDT settings immediately.
+ } 
 }
 
 package fronthem;
