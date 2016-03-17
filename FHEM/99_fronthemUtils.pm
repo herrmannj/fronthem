@@ -37,12 +37,12 @@ sub UZSU_execute($$)
      my $weekdays = $uzsu->{list}[$i]->{rrule};
      $weekdays = substr($weekdays,18,50);
      # if the structure contains the holidays list, use it!
-     if {list}[$i]->{holidays} {
-     	if {list}[$i]->{holiday}->{weekend} {
+     if ({list}[$i]->{holidays}) {
+     	if ({list}[$i]->{holiday}->{weekend}) {
 	     	$weekdays = $weekdays . ',$we';
      	}
-     	if {list}[$i]->{holiday}->{work} {
-	     	$weekdays = $weekdays . ',$!we';
+     	if ({list}[$i]->{holiday}->{work}) {
+	     	$weekdays = $weekdays . ',!$we';
      	}
      }
      if (($uzsu->{list}[$i]->{active})) {
@@ -53,22 +53,20 @@ sub UZSU_execute($$)
           # Bugfix below: because sunset_abs from 99_sunrise_el does not work if max-time = ""
           if ($uzsu->{list}[$i]->{timeMin} ne '' and $uzsu->{list}[$i]->{timeMax} ne '') {
             $weekdays_part = $weekdays_part.' '.$weekdays.'|{'.$uzsu->{list}[$i]->{event}.'_abs("REAL",'.$uzsu->{list}[$i]->{timeOffset} * 60 .',"'.$uzsu->{list}[$i]->{timeMin}.'","'.$uzsu->{list}[$i]->{timeMax}.'")}|'.$uzsu->{list}[$i]->{value};
-          }
-          else {
+          } else {
           $weekdays_part = $weekdays_part.' '.$weekdays.'|{'.$uzsu->{list}[$i]->{event}.'_abs("REAL",'.$uzsu->{list}[$i]->{timeOffset} * 60 .',,)}|'.$uzsu->{list}[$i]->{value};
           }
        }
      }
      # if the structure contains a condition, use it!
-     if {list}[$i]->{condition} {
-     	if {list}[$i]->{condition}->{conditionType} eq 'Perl' {
-     		$weekdays_part = $weekdayspart.'|('.{list}[$i]->{condition}->{conditionDevicePerl}.')'
-     	}
-     	else {
-     		$weekdays_part = $weekdayspart.'|(ReadingsVal("'.{list}[$i]->{condition}->{conditionDevicePerl}.'","'.{list}[$i]->{condition}->{conditionType}.'","") eq "'.{list}[$i]->{condition}->{conditionValue}.'")'
+     if ({list}[$i]->{condition}) {
+     	if ({list}[$i]->{condition}->{conditionType} eq 'Perl') {
+     		$weekdays_part = $weekdayspart.'|('.{list}[$i]->{condition}->{conditionDevicePerl}.')';
+     	} else {
+     		$weekdays_part = $weekdayspart.'|(ReadingsVal("'.{list}[$i]->{condition}->{conditionDevicePerl}.'","'.{list}[$i]->{condition}->{conditionType}.'","") eq "'.{list}[$i]->{condition}->{conditionValue}.'")';
      	}
      }
-	fhem('defmod wdt_uzsu_'.$device.' WeekdayTimer '.$device.' en '.$weekdays_part);
+	fhem('defmod wdt_uzsu_'.$device.'-'.$i.' WeekdayTimer '.$device.' en '.$weekdays_part);
  	if ($uzsu->{active}){
 	 	fhem('attr wdt_uzsu_'.$device.' disable 0');
 	} else {
