@@ -68,15 +68,15 @@ sub UZSU_execute($$)
      # if the structure contains a condition, use it!
 	 if ($uzsu->{list}[$i]->{condition}->{conditionActive}) {
 	    if ($uzsu->{list}[$i]->{condition}->{conditionType} eq 'Perl') {
-		    print 'Perl-Condition\n';
-		    $perlString = $uzsu->{list}[$i]->{condition}->{conditionDevicePerl};
-			print $perlString;
-			#$perlString =~ s/\\"/"/ig;
-			#print $perlString;
+		Log 4,  'uzsu Perl-Condition\n';
+		$perlString = $uzsu->{list}[$i]->{condition}->{conditionDevicePerl};
+		Log 4, 'uzsu ' .  $perlString;
+		#$perlString =~ s/\\"/"/ig;
+		#Log 4, 'uzsu ' .  $perlString;
      		$weekdays = $weekdays.' ('.$perlString.')';
-			print $weekdays;
+		Log 4, 'uzsu ' , $weekdays;
      	} else {
-		    print 'non-Perl-Condition\n';
+		Log 4, 'uzsu non-Perl-Condition\n';
      		$weekdays = $weekdays.' (ReadingsVal("'.$uzsu->{list}[$i]->{condition}->{conditionDevicePerl}.'","state","") '.$uzsu->{list}[$i]->{condition}->{conditionType}.' "'.$uzsu->{list}[$i]->{condition}->{conditionValue}.'")';
      	}
      }
