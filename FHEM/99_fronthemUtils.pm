@@ -30,11 +30,12 @@ sub UZSU_execute($$)
 {
  my ($device, $uzsu) = @_;
  my $weekdays = "";
-
+ my $perlString = "";
+ 
  $uzsu = decode_json($uzsu);
 
- fhem('delete wdt_uzsu_'.$device.'_.*');
-
+ fhem('delete wdt_uzsu_'.$device.'.*');
+ 
  for(my $i=0; $i < @{$uzsu->{list}}; $i++) {
      $weekdays = $uzsu->{list}[$i]->{rrule};
      $weekdays = substr($weekdays,18,50);
@@ -65,10 +66,17 @@ sub UZSU_execute($$)
      }
      
      # if the structure contains a condition, use it!
-     if ($uzsu->{list}[$i]->{condition}->{conditionActive}) {
-     	if ($uzsu->{list}[$i]->{condition}->{conditionType} eq 'Perl') {
-     		$weekdays = $weekdays.' ('.$uzsu->{list}[$i]->{condition}->{conditionDevicePerl}.')';
+	 if ($uzsu->{list}[$i]->{condition}->{conditionActive}) {
+	    if ($uzsu->{list}[$i]->{condition}->{conditionType} eq 'Perl') {
+		    print 'Perl-Condition\n';
+		    $perlString = $uzsu->{list}[$i]->{condition}->{conditionDevicePerl};
+			print $perlString;
+			#$perlString =~ s/\\"/"/ig;
+			#print $perlString;
+     		$weekdays = $weekdays.' ('.$perlString.')';
+			print $weekdays;
      	} else {
+		    print 'non-Perl-Condition\n';
      		$weekdays = $weekdays.' (ReadingsVal("'.$uzsu->{list}[$i]->{condition}->{conditionDevicePerl}.'","state","") '.$uzsu->{list}[$i]->{condition}->{conditionType}.' "'.$uzsu->{list}[$i]->{condition}->{conditionValue}.'")';
      	}
      }
@@ -114,13 +122,14 @@ sub UZSU(@)
   if ($param->{cmd} eq 'send')
   {
     $param->{gad} = $gad;
-	$param->{gadval} = main::fronthem_decodejson(main::ReadingsVal($device, $reading, ''));
+	$param->{gadval} = main::fronthem_decodejson(main::ReadingsVal($device, $reading, '{}'));
 	$param->{gads} = [];
     return undef;
   }
   elsif ($param->{cmd} eq 'rcv')
   {
 	$gadval = main::fronthem_encodejson($gadval);
+	main::UZSU_execute($device, $gadval);
 	$gadval =~ s/;/;;/ig;
 	$param->{result} = main::fhem("setreading $device $reading $gadval");
 	$param->{results} = [];
