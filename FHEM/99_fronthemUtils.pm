@@ -23,7 +23,7 @@ sub fronthem_encodejson($) {
 ###############################################################################
 #
 # Umsetzen der UZSU-Settings für ein device
-# for use with UZSU widget V4.4
+# for use with UZSU widget V4.6
 #
 ###############################################################################
 sub UZSU_execute($@)
@@ -71,9 +71,9 @@ for(my $i=0; $i < @{$uzsu->{list}}; $i++) {
 
     # if the structure contains a condition, use it!
     if ($uzsu->{list}[$i]->{condition}->{active}) {
-       if ($uzsu->{list}[$i]->{condition}->{type} eq 'Perl') {
+       if ($uzsu->{list}[$i]->{condition}->{type} eq 'String') {
        Log 4,  'uzsu Perl-Condition\n';
-       $perlString = trim($uzsu->{list}[$i]->{condition}->{devicePerl});
+       $perlString = trim($uzsu->{list}[$i]->{condition}->{deviceString});
        Log 4, 'uzsu ' .  $perlString;
        #$perlString =~ s/\\"/"/ig;
        #Log 4, 'uzsu ' .  $perlString;
@@ -93,15 +93,15 @@ for(my $i=0; $i < @{$uzsu->{list}}; $i++) {
        Log 4, 'uzsu '.$weekdays.' '.$condition;
         } else {
        Log 4, 'uzsu non-Perl-Condition\n';
-            $condition = ' (ReadingsVal("'.$uzsu->{list}[$i]->{condition}->{devicePerl}.'","state","") '.$uzsu->{list}[$i]->{condition}->{type}.' "'.$uzsu->{list}[$i]->{condition}->{value}.'")';
+            $condition = ' (ReadingsVal("'.$uzsu->{list}[$i]->{condition}->{deviceString}.'","state","") '.$uzsu->{list}[$i]->{condition}->{type}.' "'.$uzsu->{list}[$i]->{condition}->{value}.'")';
         }
     }
 
    # if the structure contains a delayedExec, use it!
     if ($uzsu->{list}[$i]->{delayedExec}->{active}) {
-       if ($uzsu->{list}[$i]->{delayedExec}->{type} eq 'Perl') {
+       if ($uzsu->{list}[$i]->{delayedExec}->{type} eq 'String') {
        Log 4,  'uzsu Perl-Condition\n';
-       $perlString = trim($uzsu->{list}[$i]->{delayedExec}->{devicePerl});
+       $perlString = trim($uzsu->{list}[$i]->{delayedExec}->{deviceString});
        Log 4, 'uzsu ' .  $perlString;
        #$perlString =~ s/\\"/"/ig;
        #Log 4, 'uzsu ' .  $perlString;
@@ -117,7 +117,7 @@ for(my $i=0; $i < @{$uzsu->{list}}; $i++) {
        #Log 4, 'uzsu ' , $delayedExec;
         } else {
        Log 4, 'uzsu non-Perl-Condition\n';
-            $delayedExec = '{ (ReadingsVal("'.$uzsu->{list}[$i]->{delayedExec}->{devicePerl}.'","state","") '.$uzsu->{list}[$i]->{delayedExec}->{type}.' "'.$uzsu->{list}[$i]->{delayedExec}->{value}.'") }';
+            $delayedExec = '{ (ReadingsVal("'.$uzsu->{list}[$i]->{delayedExec}->{deviceString}.'","state","") '.$uzsu->{list}[$i]->{delayedExec}->{type}.' "'.$uzsu->{list}[$i]->{delayedExec}->{value}.'") }';
         }
     }
     
