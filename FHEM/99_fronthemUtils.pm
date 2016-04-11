@@ -51,7 +51,7 @@ for(my $i=0; $i < @{$uzsu->{list}}; $i++) {
    }
         $weekdays = $weekdays . '$we';
     }
-    if ($uzsu->{list}[$i]->{holiday}->{work}) {
+    if ($uzsu->{list}[$i]->{holiday}->{workday}) {
    if ($weekdays ne '') {
        $weekdays = $weekdays . ',';
    }
