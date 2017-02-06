@@ -1,7 +1,8 @@
 (function($) {
   if (typeof($) === 'undefined') {
     var scriptPath = "fhem/pgm2/jquery.min.js";
-    var xhrObj = new XMLHttpRequest(); 
+    var xhrObj = new XMLHttpRequest();
+    scriptPath = addcsrf(scriptPath);
     xhrObj.open('GET', scriptPath, false);
     xhrObj.send(null);
     var newscript = document.createElement('script');
@@ -17,7 +18,8 @@
 (function($) {
   if (typeof($.ui) === 'undefined') {
     var scriptPath = "fhem/pgm2/jquery-ui.min.js";
-    var xhrObj = new XMLHttpRequest(); 
+    var xhrObj = new XMLHttpRequest();
+    scriptPath = addcsrf(scriptPath);
     xhrObj.open('GET', scriptPath, false);
     xhrObj.send(null);
     var newscript = document.createElement('script');
@@ -41,6 +43,7 @@ function sveReadGADList(device) {
   var transfer = {};
   transfer.cmd = 'gadList';
   var dataString = 'dev.' + device + '=' + device + '&cmd.' + device + '=get&arg.' + device + '=webif-data&val.' + device + '=' + JSON.stringify(transfer) + '&XHR=1';
+  dataString = addcsrf(dataString);
   $.ajax({
     type: "POST",
     url: url,
@@ -123,6 +126,7 @@ function sveLoadGADitem(device, gadName) {
   transfer.cmd = 'gadItem';
   transfer.item = gadName;
   var dataString ='dev.' + device + '=' + device + '&cmd.' + device + '=get&arg.' + device + '=webif-data&val.' + device + '=' + JSON.stringify(transfer) + '&XHR=1';
+  dataString = addcsrf(dataString);
   $.ajax({
       type: "POST",
       url: url,
@@ -193,6 +197,7 @@ function sveGADEditorItem(device, gadName, gad) {
     };
     var url = $(location).attr('pathname');
     var dataString ='dev.' + device + '=' + device + '&cmd.' + device + '=get&arg.' + device + '=webif-data&val.' + device + '=' + JSON.stringify(transfer) + '&XHR=1';
+    dataString = addcsrf(dataString);
     $.ajax({
       type: "POST",
       url: url,
@@ -318,6 +323,7 @@ function sveGADEditorSave(device, gadName, transfer, success, error) {
   console.log('gad save');
   var url = $(location).attr('pathname');
   var dataString ='dev.' + device + '=' + device + '&cmd.' + device + '=get&arg.' + device + '=webif-data&val.' + device + '=' + JSON.stringify(transfer) + '&XHR=1';
+  dataString = addcsrf(dataString);
   $.ajax({
     type: "POST",
     url: url,
