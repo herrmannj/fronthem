@@ -39,11 +39,11 @@
 
 function sveReadGADList(device) {
   console.log('read list');
+  var token = $("body").attr('fwcsrf') ? '&fwcsrf=' + $("body").attr('fwcsrf') : '';
   var url = $(location).attr('pathname');
   var transfer = {};
   transfer.cmd = 'gadList';
-  var dataString = 'dev.' + device + '=' + device + '&cmd.' + device + '=get&arg.' + device + '=webif-data&val.' + device + '=' + JSON.stringify(transfer) + '&XHR=1';
-  dataString = addcsrf(dataString);
+  var dataString = 'dev.' + device + '=' + device + '&cmd.' + device + '=get&arg.' + device + '=webif-data&val.' + device + '=' + JSON.stringify(transfer) + '&XHR=1' + token;
   $.ajax({
     type: "POST",
     url: url,
