@@ -228,7 +228,7 @@ fronthem_ipcRead($)
       # TODO check if a dispatcher is set
       eval 
       {
-        $up = json_decode($msg);
+        $up = decode_json($msg);
     
         Log3 ($ipcHash->{PARENT}, $up->{log}->{level}, "ipc $ipcHash->{NAME} ($id): $up->{log}->{text}") if (exists($up->{log}) && (($up->{log}->{cmd} || '') eq 'log'));
         #keep global cfg up to date, add new items 
