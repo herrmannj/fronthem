@@ -462,7 +462,7 @@ fronthemDevice_DoConverter(@)
     my $set = fronthemDevice_ConfigVal($hash, $gad, 'set');
     # exit here if no set is given
     return undef unless $set;
-    $set =~ s/^state// if ($param->{reading} eq 'state');
+    $set =~ s/^state// if ($set eq 'state');
     if ($set !~ /.*\$.*/)
     {
       fhem "set $device $set $param->{result}";
