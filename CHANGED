@@ -1,7 +1,8 @@
+2017-12-15
+- Modified state handling in received events: thx ddtlabs
+
 2015-01-18
 - minor typo: thx fhainz
 
 2015-01-17:
 - websocket: disconnect fixed
-
-
