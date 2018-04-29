@@ -144,7 +144,7 @@ fronthemDevice_Get(@)
       1;
     } or do {
       my $e = $@;
-      log3 ($hash->{NAME}, 1, "Error decoding webif-data $e: ".join(' ',@args));
+      Log3 ($hash->{NAME}, 1, "Error decoding webif-data $e: ".join(' ',@args));
       return undef;
     };
 
