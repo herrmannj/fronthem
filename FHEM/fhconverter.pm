@@ -196,7 +196,7 @@ sub NumDirect(@)
   }
   if ($param->{cmd} eq 'send')
   {
-    return "NumDirect converter got [$event] from $device, $reading but cant interpret it as a number" unless $event =~ /\D*([+-]{0,1}\d+[.]{0,1}\d*).*?/;
+    return "NumDirect converter got [$event] from $device, $reading but cant interpret it as a number" unless $event =~ /([+-]{0,1}\d+[.]{0,1}\d*)/;
     $event = $1;
     $param->{gad} = $gad;
     $param->{gadval} = $event;
@@ -208,7 +208,7 @@ sub NumDirect(@)
 		my $min = $args[0];
 		my $max = $args[1];
 		my $adj = 0;
-		return "NumDirect converter received [$gadval] but cant interpret it as a number" unless $gadval =~ /\D*([+-]{0,1}\d+[.]{0,1}\d*).*?/;
+		return "NumDirect converter received [$gadval] but cant interpret it as a number" unless $gadval =~ /([+-]{0,1}\d+[.]{0,1}\d*)/;
     $gadval = $1;
 
 		if (defined($min) && ($gadval < $min)) 
