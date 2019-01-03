@@ -305,7 +305,7 @@ sub NumDisplay(@)
   }
   if ($param->{cmd} eq 'send')
   {
-    return "NumDisplay converter got [$event] from $device, $reading but cant interpret it as a number" unless $event =~ /\D*([+-]{0,1}\d+[.]{0,1}\d*).*?/;
+    return "NumDisplay converter got [$event] from $device, $reading but cant interpret it as a number" unless $event =~ /([+-]{0,1}\d+[.]{0,1}\d*)?/;
     $event = $1;
 		my $format = (@args)?$args[0]:"%.1f";
     $param->{gad} = $gad;
