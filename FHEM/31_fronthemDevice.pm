@@ -322,7 +322,6 @@ fronthemDevice_Notify($$)
     foreach my $event (@{$ntfyDev->{CHANGED}})
     {
       my @e = split(' ', $event);
-      Log3 ($hash, 1, "in $e[0]"); #TODO remove
       if ($e[0] eq 'INITIALIZED')
       {
         fronthemDevice_Start($hash);
