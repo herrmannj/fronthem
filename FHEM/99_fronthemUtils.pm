@@ -20,47 +20,123 @@ sub fronthem_encodejson($) {
  return encode_json($_[0]);
 }  
 
-
 ###############################################################################
 #
 # Umsetzen der UZSU-Settings für ein device
+# for use with UZSU widget V4.6
 #
 ###############################################################################
-sub UZSU_execute($$)
+sub UZSU_execute($@)
 {
- my ($device, $uzsu) = @_;
+my ($device, $uzsu) = @_;
+my $weekdays = "";
+my $condition = "";
+my $delayedExec ="";
+my $perlString = "";
 
- $uzsu = decode_json($uzsu);
+$uzsu = decode_json($uzsu);
 
- my $weekdays_part = " ";
- for(my $i=0; $i < @{$uzsu->{list}}; $i++) {
-     my $weekdays = $uzsu->{list}[$i]->{rrule};
-     $weekdays = substr($weekdays,18,50);
-     if (($uzsu->{list}[$i]->{active})) {
-         if ($uzsu->{list}[$i]->{event} eq 'time'){
-         $weekdays_part = $weekdays_part.' '.$weekdays.'|'.$uzsu->{list}[$i]->{time}.'|'.$uzsu->{list}[$i]->{value};
-         }
-       else {
-          # Bugfix below: because sunset_abs from 99_sunrise_el does not work if max-time = ""
-          if ($uzsu->{list}[$i]->{timeMin} ne '' and $uzsu->{list}[$i]->{timeMax} ne '') {
-            $weekdays_part = $weekdays_part.' '.$weekdays.'|{'.$uzsu->{list}[$i]->{event}.'_abs("REAL",'.$uzsu->{list}[$i]->{timeOffset} * 60 .',"'.$uzsu->{list}[$i]->{timeMin}.'","'.$uzsu->{list}[$i]->{timeMax}.'")}|'.$uzsu->{list}[$i]->{value};
-          }
-          else {
-          $weekdays_part = $weekdays_part.' '.$weekdays.'|{'.$uzsu->{list}[$i]->{event}.'_abs("REAL",'.$uzsu->{list}[$i]->{timeOffset} * 60 .',,)}|'.$uzsu->{list}[$i]->{value};
-          }
-       }
-     }
- }
- fhem('defmod wdt_uzsu_'.$device.' WeekdayTimer '.$device.' en '.$weekdays_part);
- if ($uzsu->{active}){
- fhem('attr wdt_uzsu_'.$device.' disable 0');
-} else {
- fhem('attr wdt_uzsu_'.$device.' disable 1');
+fhem('delete wdt_uzsu_'.$device.'.*');
+
+for(my $i=0; $i < @{$uzsu->{list}}; $i++) {
+    $weekdays = $uzsu->{list}[$i]->{rrule};
+    $weekdays = substr($weekdays,18,50);
+    $delayedExec = "";
+    $condition = "";
+
+    # if the structure contains the holidays list, use it!
+    if ($uzsu->{list}[$i]->{holiday}->{weekend}) {
+   if ($weekdays ne '') {
+       $weekdays = $weekdays . ',';
+   }
+        $weekdays = $weekdays . '$we';
+    }
+    if ($uzsu->{list}[$i]->{holiday}->{workday}) {
+   if ($weekdays ne '') {
+       $weekdays = $weekdays . ',';
+   }
+        $weekdays = $weekdays . '!$we';
+    }
+
+    if ($uzsu->{list}[$i]->{event} eq 'time'){
+        $weekdays = $weekdays.'|'.$uzsu->{list}[$i]->{time}.'|'.$uzsu->{list}[$i]->{value};
+    } else {
+        # Bugfix below: because sunset_abs from 99_sunrise_el does not work if max-time = ""
+        if ($uzsu->{list}[$i]->{timeMin} ne '' and $uzsu->{list}[$i]->{timeMax} ne '') {
+            $weekdays = $weekdays.'|{'.$uzsu->{list}[$i]->{event}.'_abs("REAL",'.$uzsu->{list}[$i]->{timeOffset} * 60 .',"'.$uzsu->{list}[$i]->{timeMin}.'","'.$uzsu->{list}[$i]->{timeMax}.'")}|'.$uzsu->{list}[$i]->{value};
+        } else {
+            $weekdays = $weekdays.'|{'.$uzsu->{list}[$i]->{event}.'_abs("REAL",'.$uzsu->{list}[$i]->{timeOffset} * 60 .',,)}|'.$uzsu->{list}[$i]->{value};
+        }
+    }
+
+    # if the structure contains a condition, use it!
+    if ($uzsu->{list}[$i]->{condition}->{active}) {
+       if ($uzsu->{list}[$i]->{condition}->{type} eq 'String') {
+       Log 4,  'uzsu Perl-Condition\n';
+       $perlString = trim($uzsu->{list}[$i]->{condition}->{deviceString});
+       Log 4, 'uzsu ' .  $perlString;
+       #$perlString =~ s/\\"/"/ig;
+       #Log 4, 'uzsu ' .  $perlString;
+               # remove leading '{' and trailing '}'
+               if (substr($perlString,0,1) eq "{" && substr($perlString,length($perlString)-1,1) eq "}") {
+                  $perlString = trim(substr($perlString,1,length($perlString)-2));
+               }
+               # remove leading '(' and trailing ')'
+               if (substr($perlString,0,1) eq "(" && substr($perlString,length($perlString)-1,1) eq ")") {
+                  $perlString = trim(substr($perlString,1,length($perlString)-2));
+               }
+               if (substr($perlString,0,4) eq "fhem") {
+                  $condition = ' {'.$perlString.'}';
+               } else {
+               $condition = ' ('.$perlString.')';
+               }
+       Log 4, 'uzsu '.$weekdays.' '.$condition;
+        } else {
+       Log 4, 'uzsu non-Perl-Condition\n';
+            $condition = ' (ReadingsVal("'.$uzsu->{list}[$i]->{condition}->{deviceString}.'","state","") '.$uzsu->{list}[$i]->{condition}->{type}.' "'.$uzsu->{list}[$i]->{condition}->{value}.'")';
+        }
+    }
+
+   # if the structure contains a delayedExec, use it!
+    if ($uzsu->{list}[$i]->{delayedExec}->{active}) {
+       if ($uzsu->{list}[$i]->{delayedExec}->{type} eq 'String') {
+       Log 4,  'uzsu Perl-Condition\n';
+       $perlString = trim($uzsu->{list}[$i]->{delayedExec}->{deviceString});
+       Log 4, 'uzsu ' .  $perlString;
+       #$perlString =~ s/\\"/"/ig;
+       #Log 4, 'uzsu ' .  $perlString;
+               # remove leading '{' and trailing '}'
+               if (substr($perlString,0,1) eq "{" && substr($perlString,length($perlString)-1,1) eq "}") {
+                  $perlString = trim(substr($perlString,1,length($perlString)-2));
+               }
+               # remove leading '(' and trailing ')'
+               if (substr($perlString,0,1) eq "(" && substr($perlString,length($perlString)-1,1) eq ")") {
+                  $perlString = trim(substr($perlString,1,length($perlString)-2));
+               }
+             $delayedExec = '{ ('.$perlString.') }';
+       #Log 4, 'uzsu ' , $delayedExec;
+        } else {
+       Log 4, 'uzsu non-Perl-Condition\n';
+            $delayedExec = '{ (ReadingsVal("'.$uzsu->{list}[$i]->{delayedExec}->{deviceString}.'","state","") '.$uzsu->{list}[$i]->{delayedExec}->{type}.' "'.$uzsu->{list}[$i]->{delayedExec}->{value}.'") }';
+        }
+    }
+    
+
+    if ($uzsu->{list}[$i]->{active}){
+        fhem('defmod wdt_uzsu_'.$device.'_'.$i.' WeekdayTimer '.$device.' en '.trim($weekdays.$condition));
+        fhem('attr wdt_uzsu_'.$device.'_'.$i.' room UZSU');
+        fhem('attr wdt_uzsu_'.$device.'_'.$i.' group '.$device);
+        fhem('setreading wdt_uzsu_'.$device.'_'.$i.' weekdays '.trim($weekdays) );
+        fhem('defmod rg_uzsu_'.$device.' readingsgroup wdt_uzsu_'.$device.'.*');
+        fhem('attr rg_uzsu_'.$device.' room UZSU');
+    if ($delayedExec) {
+     fhem('attr wdt_uzsu_'.$device.'_'.$i.' delayedExecutionCond '.$delayedExec);
+    }
+    }
+    #fhem('save');   # use only if you want to save WDT settings immediately.
 }
- fhem('attr wdt_uzsu_'.$device.' room UZSU');
- #fhem('save');   # use only if you want to save WDT settings immediately.
- 
 }
+
 
 package fronthem;
 use strict;
@@ -94,13 +170,14 @@ sub UZSU(@)
   if ($param->{cmd} eq 'send')
   {
     $param->{gad} = $gad;
-	$param->{gadval} = main::fronthem_decodejson(main::ReadingsVal($device, $reading, ''));
+	$param->{gadval} = main::fronthem_decodejson(main::ReadingsVal($device, $reading, '{}'));
 	$param->{gads} = [];
     return undef;
   }
   elsif ($param->{cmd} eq 'rcv')
   {
 	$gadval = main::fronthem_encodejson($gadval);
+	main::UZSU_execute($device, $gadval);
 	$gadval =~ s/;/;;/ig;
 	$param->{result} = main::fhem("setreading $device $reading $gadval");
 	$param->{results} = [];
