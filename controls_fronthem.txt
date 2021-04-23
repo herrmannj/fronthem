@@ -1,5 +1,5 @@
-UPD 2017-03-19_12:51:23 21951 FHEM/01_fronthem.pm
-UPD 2017-12-15_21:25:09 21063 FHEM/31_fronthemDevice.pm
+UPD 2021-03-21_10:06:23 21901 FHEM/01_fronthem.pm
+UPD 2021-03-21_10:06:09 21015 FHEM/31_fronthemDevice.pm
 UPD 2015-02-13_21:23:35 7435 FHEM/fhwebsocket.pm
 UPD 2019-01-03_11:22:09 9811 FHEM/fhconverter.pm
 UPD 2017-03-16_14:28:59 13825 www/pgm2/fronthemEditor.js
