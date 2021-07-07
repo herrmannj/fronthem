@@ -326,6 +326,59 @@ sub NumDisplay(@)
 
 ###############################################################################
 #
+# converts reading to bool (1|0), one way fhem->fronthem
+#
+###############################################################################
+sub BoolDisplay(@)
+{
+  my ($param) = @_;
+  my $cmd = $param->{cmd};
+  my $gad = $param->{gad};
+  my $gadval = $param->{gadval};
+
+  my $device = $param->{device};
+  my $reading = $param->{reading};
+  my $event = $param->{event};
+  
+  my @args = @{$param->{args}};
+
+  if ($param->{cmd} eq 'get')
+  {
+    $event = ($reading eq 'state') ? main::Value($device) : main::ReadingsVal($device, $reading, '0');
+    $param->{cmd} = 'send';
+  }
+  
+  if ($param->{cmd} eq 'send')
+  {
+    if ($event =~ /\D*([+-]{0,1}\d+[.]{0,1}\d*).*?/)
+    {
+      # numeric: greater than thresh -> 1, less or equal -> 0
+      $event = $1;
+      my $thresh = (@args) ? $args[0] : 0;
+      $param->{gadval} = ($event > $thresh) ? 1 : 0;
+    }
+    else 
+    {
+      # string: we convert on/off to 1/0
+      $param->{gadval} = ($event eq "off") ? 0 : 1;
+    }
+    $param->{gad} = $gad;
+    $param->{gads} = [];
+    return undef;
+  }
+  elsif ($param->{cmd} eq 'rcv')
+  {
+    return 'done'; # only a display, no set
+  }
+  elsif ($param->{cmd} eq '?')
+  {
+    return 'usage: TBD!!!';
+  }
+  return undef;
+}
+
+###############################################################################
+#
 # RGB device, param: gad_r, gad_g, gad_b
 # send: RGB HEX reading into three gad (r,g,b)
 # rcv: 3 gad, serielized. Assembled to RGB HEX
