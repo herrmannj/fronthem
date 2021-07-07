@@ -4,6 +4,7 @@
 package fronthem;
 use strict;
 use warnings;
+use String::Escape;
 
 ###############################################################################
 #
@@ -372,6 +373,72 @@ sub RGBCombined(@)
   elsif ($param->{cmd} eq '?')
   {
     return 'usage: RGBCombined gad_r, gad_g, gad_b';
+  }
+  return undef;
+}
+
+###############################################################################
+#
+# converts readings using user perl code
+# first argument converts outgoing data (e.g. {$VALUE / 1000.0}
+# second argument converts incoming data (e.g. {$VALUE * 1000.0}
+#
+###############################################################################
+sub UserCode(@)
+{
+  my ($param) = @_;
+  my $cmd = $param->{cmd};
+  my $gad = $param->{gad};
+  my $gadval = $param->{gadval};
+
+  my $device = $param->{device};
+  my $reading = $param->{reading};
+  my $event = $param->{event};
+
+  # we join the arguments to one string because they might have
+  # been split in an inproper way for us
+  my $argsStr = join(",", @{$param->{args}});
+
+  # now we split the args correctly
+  # (we obey commas within perl code)
+  my $regexi= '\s*({.*?})\s*';
+  my $regexo= '^(' . $regexi . ')(,\s*(.*))*$';
+  my @args;
+  while($argsStr =~ /$regexo/) {
+    push(@args, $2);
+    
+    $argsStr = defined($4) ? $4 : "";
+  }
+
+  return "error:$gad: converter syntax: wrong paramter count" unless (@args == 1 or @args == 2);
+  
+  if ($param->{cmd} eq 'get')
+  {
+    $event = ($reading eq 'state') ? main::Value($device) : main::ReadingsVal($device, $reading, '0');
+    $param->{cmd} = 'send';
+  }
+  
+  if ($param->{cmd} eq 'send')
+  {
+    my $VALUE = $event;
+    $param->{gadval} = eval $args[0];
+    $param->{gad} = $gad;
+    $param->{gads} = [];
+    return undef;
+  }
+  elsif ($param->{cmd} eq 'rcv')
+  {
+    return "done" if (@args < 2); # we are read-only if we havent a second arg
+
+    # make sure to properly escape untrusted code
+    my $VALUE = String::Escape::quote(String::Escape::backslash($gadval));
+    $param->{result} = eval $args[1];
+    $param->{results} = [];
+    return undef;
+  }
+  elsif ($param->{cmd} eq '?')
+  {
+    return 'usage: TBD!!!';
   }
   return undef;
 }
